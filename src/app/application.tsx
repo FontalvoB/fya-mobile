@@ -112,6 +112,7 @@ export default function Application() {
   ];
   return (
     <Screen
+      onBack={() => (step > 0 ? go(step - 1) : router.back())}
       title={titles[step]}
       eyebrow={`TU SOLICITUD · ${String(step + 1).padStart(2, "0")} / 06`}
       subtitle={subtitles[step]}

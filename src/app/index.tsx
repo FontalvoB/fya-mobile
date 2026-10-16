@@ -57,7 +57,7 @@ export default function Welcome() {
           <ImageBackground
             source={require("../../assets/welcome.jpg")}
             style={{ flex: 1 }}
-            imageStyle={{ resizeMode: "cover" }}
+            imageStyle={{ resizeMode: "cover", width: "100%", height: "100%" }}
           >
             <LinearGradient
               colors={["transparent", "#0D3429DD"]}

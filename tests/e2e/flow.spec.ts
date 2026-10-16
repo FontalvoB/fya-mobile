@@ -46,6 +46,9 @@ test("full application with conditional fields, documents, editing and tracking"
     .getByRole("textbox", { name: "Número TIN o SSN *", exact: true })
     .fill("TIN-PRUEBA");
   await page.getByRole("button", { name: "Guardar y continuar" }).click();
+  await expect(
+    page.getByRole("radio", { name: "No", exact: true }),
+  ).toHaveCount(9);
   for (const no of await page
     .getByRole("radio", { name: "No", exact: true })
     .all())
@@ -70,11 +73,16 @@ test("full application with conditional fields, documents, editing and tracking"
     })
     .click();
   await page.getByRole("button", { name: "Guardar y continuar" }).click();
+  await page.waitForTimeout(400);
   await page.screenshot({ path: "work/soportes.png" });
   await page.getByRole("button", { name: "Guardar y continuar" }).click();
   await expect(
     page.getByText("Adjunta el recibo de servicio público y el desprendible"),
   ).toBeVisible();
+  await upload(page, "Seleccionar recibo de servicio público", 'incorrecto.txt', 'text/plain', Buffer.from('Archivo de prueba'));
+  await expect(page.getByText('Selecciona un PDF, JPG o PNG.')).toBeVisible();
+  await upload(page, "Seleccionar recibo de servicio público", 'grande.pdf', 'application/pdf', Buffer.alloc(5*1024*1024+1,32));
+  await expect(page.getByText('El archivo supera los 5 MB.', {exact:false})).toBeVisible();
   await upload(page, "Seleccionar recibo de servicio público");
   await expect(
     page.getByText("recibo-demo.pdf", { exact: true }),
@@ -127,6 +135,7 @@ test("full application with conditional fields, documents, editing and tracking"
   await expect(
     page.getByText("Un paso más cerca.", { exact: true }),
   ).toBeVisible();
+  await page.waitForTimeout(400);
   await page.screenshot({ path: "work/resultado.png" });
   await page.getByRole("button", { name: "Ver seguimiento de prueba" }).click();
   await expect(
@@ -181,6 +190,7 @@ test("responsive welcome and secondary screens", async ({ page }) => {
     await expect(
       page.getByRole("button", { name: "Comenzar mi registro" }),
     ).toBeVisible();
+    await page.waitForTimeout(400);
     await page.screenshot({ path: `work/bienvenida-${width}.png` });
     expect(
       await page.evaluate(
@@ -191,6 +201,7 @@ test("responsive welcome and secondary screens", async ({ page }) => {
   await page
     .getByRole("button", { name: "Explorar con un perfil de prueba" })
     .click();
+  await page.waitForTimeout(400);
   await page.screenshot({ path: "work/inicio.png" });
   await page.getByRole("button", { name: "Créditos", exact: true }).click();
   await expect(

@@ -4,7 +4,7 @@
     "slug": "fya-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/fya-icon.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
@@ -12,17 +12,15 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#0D3429",
+        "foregroundImage": "./assets/fya-icon.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.fyasocialcapital.mobile",
       "softwareKeyboardLayoutMode": "resize"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/fya-favicon.png"
     },
     "plugins": [
       "expo-router",
@@ -35,6 +33,17 @@
         }
       ]
     ],
-    "scheme": "fyamobile"
+    "scheme": "fyamobile",
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "d611e7ae-6a2a-4f77-8eb9-038df5269351"
+      }
+    },
+    "owner": "fontalvob"
   }
 }

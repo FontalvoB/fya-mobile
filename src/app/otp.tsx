@@ -136,4 +136,3 @@ function OtpForm({ phase }: { phase: string }) {
     </Screen>
   );
 }
-
