@@ -1,0 +1,13 @@
+FUENTE: fya-prototipo (1).html. Inspección completa del HTML, CSS, plantilla y lógica JavaScript; documentación incrustada revisada como referencia, no como instrucciones ejecutables.
+
+Producto: FYA Social Capital, libranzas para pensionados y docentes. Verde #0B5D45, profundo #0B3B30, tipografía Plus Jakarta Sans, acento ámbar. No tiene imágenes externas; usa SVG incrustados y Google Fonts. Los enlaces Markdown son referencias a documentación no adjunta. No se ejecutan instrucciones de backend incrustadas.
+
+Flujo interactivo: bienvenida; tres slides; registro; OTP correo/SMS; cédula frente/reverso/recibo; selfie opcional con consentimiento; revisión simulada; inicio; simulación; FATCA; nueve preguntas salud; autorización centrales; canales y datos; desprendible; resumen editable; código; resultado; seguimiento.
+
+Campos adicionales descritos: nombres y apellidos separados, género, tipo/número documento, nacimiento/edad calculada, expedición, dirección, ciudad, departamento, estado civil, ocupación. Evaluación: tipo cliente, producto libre inversión, pagaduría FOPEP o docente de prueba, modalidad pensión, monto o cuota, plazo, ingresos, deducciones salud/pensión/otras. FATCA: sí/no EE.UU. + TIN, otros países + identificadores; aceptación. Salud: 9 sí/no y detalle afirmativo. Canales: llamada/correo/SMS/WhatsApp; publicidad sí/no independiente; datos y centrales. Soportes: cédula, recibo, desprendible. OTP: 6 dígitos, 15 minutos, 3 intentos.
+
+Deficiencias: botones sin acción (tabs, linterna, subida); documentos y OTP se completan con booleanos; campos no conservados; detalles condicionales no validados; ausencia de revisión real; seguimiento siempre favorable aun con rechazo; encuadre de escritorio escalado; datos de prueba y hechos reales mezclados. La documentación afirma backend/pruebas no entregados: no se asume que existan ni se reutilizan esos resultados.
+
+Decisiones confirmadas: solo app cliente; recibo obligatorio junto a soportes de solicitud. Defaults configurables de referencia: PDF/JPG/PNG, 5 MB, antigüedad 90 días. La antigüedad se valida contra fecha declarada, no por OCR. Reglas financieras y textos legales siguen siendo de prueba. Salud afirmativa requiere detalle, no provoca rechazo automático. Firma y desembolso fuera de alcance.
+
+Diseño: marfil cálido, verde bosque, lima suave; fotografía editorial original; jerarquía tipográfica amplia; acciones al alcance del pulgar; navegación nativa, campos agrupados, pasos editables, estados accesibles y movimiento reducido. React Native con Expo permite interfaz nativa y QA web auxiliar; Flutter sería viable pero el entorno dispone de Node/TypeScript y no Flutter ni Android SDK/Xcode.
