@@ -127,7 +127,7 @@ test("full application with conditional fields, documents, editing and tracking"
     .click();
   await upload(page, "Seleccionar desprendible de pago", "mesada-demo.pdf");
   await page.waitForTimeout(400);
-  await page.screenshot({path:'work/documentos-seleccionados.png'});
+  await page.screenshot({ path: "work/documentos-seleccionados.png" });
   await page.getByRole("button", { name: "Guardar y continuar" }).click();
   await page.getByRole("button", { name: "Editar residencia fiscal" }).click();
   await expect(
@@ -245,6 +245,10 @@ test("responsive welcome and secondary screens", async ({ page }) => {
     await expect(
       page.getByRole("button", { name: "Comenzar mi registro" }),
     ).toBeVisible();
+    const feature = await page
+      .getByText("Tú decides", { exact: true })
+      .boundingBox();
+    expect(feature!.x + feature!.width).toBeLessThanOrEqual(width);
     await page.waitForTimeout(400);
     await page.screenshot({ path: `work/bienvenida-${width}.png` });
     expect(

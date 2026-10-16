@@ -91,7 +91,14 @@ export default function Welcome() {
             </LinearGradient>
           </ImageBackground>
         </View>
-        <View style={s.between}>
+        <View
+          style={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            gap: 16,
+            alignItems: "center",
+          }}
+        >
           <View style={s.row}>
             <Icon name="smartphone" size={18} />
             <Text style={s.small}>A tu ritmo</Text>
