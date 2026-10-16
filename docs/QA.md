@@ -7,7 +7,7 @@
 - `npm test`: 10 pruebas de dominio aprobadas. Documentos obligatorios, formato/tamaño, fechas, FATCA condicional, salud/detalle, publicidad opcional, cálculo, OTP, idempotencia y resultados favorable/no viable.
 - `expo-doctor`: 20/20 comprobaciones aprobadas.
 - `expo export --platform all`: bundles Hermes Android e iOS y vista web generados correctamente. No equivale a ejecutar en un dispositivo.
-- Playwright / Chrome: tres escenarios aprobados. Registro con errores y OTP, documentos de identidad/revisión; solicitud completa con campos condicionales, errores de documentos, reemplazo/eliminación, edición, resultado y seguimiento; bienvenida a 320/390/768 px y navegación de créditos/perfil/ayuda.
+- Playwright / Chrome: tres escenarios aprobados, repetidos después de `npm ci` contra esta entrega en localhost:8082. Registro con errores y OTP, documentos de identidad/revisión; solicitud completa con campos condicionales, errores de documentos, reemplazo/eliminación, edición, resultados favorable/no viable y seguimiento coherente; bienvenida a 320/390/768 px y navegación de créditos/perfil/ayuda.
 - En el recorrido completo se capturan errores JavaScript del navegador; no se detectaron.
 
 ## Iteración visual
@@ -15,6 +15,8 @@
 Se inspeccionaron capturas de bienvenida, inicio, soportes y resultado. Se corrigió el tamaño intrínseco de la fotografía en React Native Web, la superposición temporal de contenido al cambiar etapas y la conservación incorrecta del desplazamiento. Las capturas se toman después de terminar la transición.
 
 Se optimizó la fotografía a 174 KB y se importan solo cuatro fuentes e iconos Feather. Los originales generados quedan versionados como material de origen.
+
+Capturas revisadas: `previews/bienvenida-390.png`, `previews/soportes.png`, `previews/documentos-seleccionados.png` y `previews/resultado.png`. Son capturas reales del frontend; contienen solo datos ficticios.
 
 ## Limitaciones verificables
 
@@ -24,7 +26,9 @@ No se conecta backend. Registro, OTP, revisión de identidad, resultado de centr
 
 ## Compilaciones nativas solicitadas
 
-- Android APK: https://expo.dev/accounts/fontalvob/projects/fya-mobile/builds/78aea93d-cf9e-422b-93eb-b09e8fd9510c
-- iOS simulador: https://expo.dev/accounts/fontalvob/projects/fya-mobile/builds/475ba654-d422-42e2-bd5a-4487d421df5d
+- Android APK: https://expo.dev/accounts/fontalvob/projects/fya-mobile/builds/6850c9d6-99a0-407d-990b-a2d5100c68c6
+- iOS simulador: https://expo.dev/accounts/fontalvob/projects/fya-mobile/builds/19e9e066-04d0-4a6d-8bd2-d9b3dd543214
+
+El primer intento iOS falló por dependencias opcionales ausentes en el lockfile generado con npm 11.6.2. Se regeneró con npm 11.21.1, se verificó instalación limpia y se reintentó. El primer Android se canceló en cola para usar la corrección. En el nuevo iOS ya se verificaron exitosamente instalación de dependencias, prebuild y CocoaPods.
 
 El estado final se actualizará al recibir el resultado de EAS. No se ha publicado en App Store ni Google Play. iOS para dispositivos físicos requiere Apple Developer y provisión.

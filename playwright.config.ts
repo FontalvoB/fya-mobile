@@ -4,7 +4,7 @@ export default defineConfig({
   timeout: 90000,
   workers: 1,
   use: {
-    baseURL: "http://localhost:8081",
+    baseURL: process.env.FYA_BASE_URL || "http://localhost:8081",
     viewport: { width: 390, height: 844 },
     channel: "chrome",
     headless: true,

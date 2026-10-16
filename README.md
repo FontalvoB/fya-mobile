@@ -28,6 +28,8 @@ npx expo export --platform all
 
 Para las pruebas de interacción, iniciar `npx expo start --web --localhost --port 8081` y, en otra terminal, `npx playwright test`. Usan Chrome instalado. La configuración está en `playwright.config.ts`.
 
+Si ese puerto está ocupado, usar `--port 8082` y establecer `FYA_BASE_URL=http://localhost:8082` para Playwright (PowerShell: `$env:FYA_BASE_URL='http://localhost:8082'`). La entrega se revisó en ese puerto para preservar otro servidor existente.
+
 ## Instaladores Android e iOS
 
 Proyecto Expo: https://expo.dev/accounts/fontalvob/projects/fya-mobile. EAS genera las carpetas nativas; no se mantienen proyectos Android/iOS manuales.
@@ -85,6 +87,8 @@ Consultar `docs/QA.md` para la evidencia exacta. Se verificó la vista auxiliar 
 No hay Android SDK/emulador, dispositivo conectado ni Xcode en este Windows. Cámara, permisos, teclado virtual, haptics, VoiceOver/TalkBack y fluidez nativa necesitan QA en dispositivos. La previsualización de PDF muestra metadatos; las imágenes sí muestran miniatura. Los parámetros legales, financieros, pagadurías y contenido definitivo de firma siguen pendientes de aprobación del negocio.
 
 `npm audit` reporta 26 avisos transitivos (19 altos y 7 moderados), originados en `braces`, `node-forge` y `uuid` y propagados al árbol Expo/Metro. Se ejecutó `npm audit fix` sin forzar cambios incompatibles; el informe propone degradaciones mayores que romperían el SDK. Revisar actualizaciones de proveedores antes de producción. No se declara esta demo lista para operar créditos reales.
+
+El lockfile se regeneró con npm 11.21.1 para resolver dependencias opcionales ausentes en macOS. Se comprobó `npm ci` real en Windows y resolución limpia para macOS/Linux; no se omite ni desactiva la validación del lockfile en EAS.
 
 ## Siguiente fase
 
