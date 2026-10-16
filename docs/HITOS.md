@@ -9,6 +9,9 @@ Repositorio privado: https://github.com/FontalvoB/fya-mobile. Rama principal: `m
 - `edcfcda`: instalación reproducible entre Windows/macOS/Linux y documentación de ejecución.
 - `a9cd3c1`: evidencia de QA, capturas reales e instrucciones.
 - `8afe096`: corrección de legibilidad a 320 px, verificada en las pruebas de navegador.
+- `351cb0d`: entrega y comprobación del artefacto iOS para simulador.
+
+La entrega final también incluye el APK Android generado correctamente en EAS y comprobado por integridad. Los enlaces de descarga y el alcance de las verificaciones están en README y docs/QA.md. Ambos builds usan el código de `8afe096`; los commits posteriores actualizan únicamente documentación.
 
 Los cambios se publicaron durante el desarrollo, después de cada bloque. Se verificó el SHA remoto de main. No se modificaron los repositorios existentes frontend-fya ni backend-fya.
 

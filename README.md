@@ -32,6 +32,13 @@ Si ese puerto está ocupado, usar `--port 8082` y establecer `FYA_BASE_URL=http:
 
 ## Instaladores Android e iOS
 
+Las dos compilaciones de esta entrega finalizaron correctamente:
+
+- [Descargar APK Android](https://expo.dev/artifacts/eas/lMIliF90I8uKZBBO6K5szi2VqBck_0ODKglly_Q-sKI.apk) (94,36 MB).
+- [Descargar app para simulador iOS](https://expo.dev/artifacts/eas/pnK6JuNOX5CXxWP_Z-3SSlDZvDvoOmFMU9JVLCPlG3Y.tar.gz) (23,37 MB).
+
+Se descargaron y comprobaron ambos archivos. La ejecución en dispositivos físicos sigue pendiente; consultar `docs/QA.md`.
+
 Proyecto Expo: https://expo.dev/accounts/fontalvob/projects/fya-mobile. EAS genera las carpetas nativas; no se mantienen proyectos Android/iOS manuales.
 
 ```bash
