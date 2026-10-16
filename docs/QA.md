@@ -26,9 +26,9 @@ No se conecta backend. Registro, OTP, revisión de identidad, resultado de centr
 
 ## Compilaciones nativas solicitadas
 
-- Android APK: https://expo.dev/accounts/fontalvob/projects/fya-mobile/builds/6850c9d6-99a0-407d-990b-a2d5100c68c6
-- iOS simulador: https://expo.dev/accounts/fontalvob/projects/fya-mobile/builds/19e9e066-04d0-4a6d-8bd2-d9b3dd543214
+- Android APK final: https://expo.dev/accounts/fontalvob/projects/fya-mobile/builds/28f31ffd-5619-4662-8227-0b8723429f0e
+- iOS simulador final: https://expo.dev/accounts/fontalvob/projects/fya-mobile/builds/fabdc6d1-5332-4595-a840-706a668eeefa
 
-El primer intento iOS falló por dependencias opcionales ausentes en el lockfile generado con npm 11.6.2. Se regeneró con npm 11.21.1, se verificó instalación limpia y se reintentó. El primer Android se canceló en cola para usar la corrección. En el nuevo iOS ya se verificaron exitosamente instalación de dependencias, prebuild y CocoaPods.
+El primer intento iOS falló por dependencias opcionales ausentes en el lockfile generado con npm 11.6.2. Se regeneró con npm 11.21.1, se verificó instalación limpia y se reintentó. El primer Android se canceló en cola para usar la corrección. En el siguiente iOS se verificaron exitosamente instalación de dependencias, prebuild y CocoaPods. Esa revisión se reemplazó para incluir el último ajuste de legibilidad a 320 px. Los dos builds finales corresponden al código `8afe096118ed08548f00ae9d7bb9e93763a0eda7`.
 
-El estado final se actualizará al recibir el resultado de EAS. No se ha publicado en App Store ni Google Play. iOS para dispositivos físicos requiere Apple Developer y provisión.
+El build iOS final terminó con estado FINISHED y produjo un archivo `.tar.gz` para simulador (23.370.208 bytes). Se descargó y se verificaron sus 274 entradas, Info.plist, identificador `com.fyasocialcapital.mobile`, versión `1.0.0` y plataforma `iphonesimulator`. Esto verifica el artefacto, no su ejecución. Android sigue en cola; su estado se actualizará al recibir el resultado de EAS. No se ha publicado en App Store ni Google Play. iOS para dispositivos físicos requiere Apple Developer y provisión.
