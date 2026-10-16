@@ -1,6 +1,11 @@
-import React, { useState } from "react";
-import { Text, View, Pressable } from "react-native";
-import { router, useLocalSearchParams, Redirect } from "expo-router";
+import React, { useState, useCallback } from "react";
+import { Text, View, Pressable, BackHandler } from "react-native";
+import {
+  router,
+  useLocalSearchParams,
+  Redirect,
+  useFocusEffect,
+} from "expo-router";
 import {
   Screen,
   Button,
@@ -50,6 +55,19 @@ export default function Application() {
   const { draft, setDraft, identity } = useSession();
   const params = useLocalSearchParams<{ step?: string; edit?: string }>();
   const step = Math.min(5, Math.max(0, Number(params.step) || 0));
+  useFocusEffect(
+    useCallback(() => {
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        () => {
+          if (step === 0) return false;
+          router.setParams({ step: String(step - 1), edit: "" });
+          return true;
+        },
+      );
+      return () => subscription.remove();
+    }, [step]),
+  );
   const [error, setError] = useState("");
   const [legal, setLegal] = useState("");
   const p = draft.profile,
@@ -451,7 +469,9 @@ export default function Application() {
               <Button
                 title="Editar simulación"
                 secondary
-                onPress={() => router.push("/simulator")}
+                onPress={() =>
+                  router.push({ pathname: "/simulator", params: { edit: "1" } })
+                }
               />
             </Card>
             {summaries.map((item, i) => (

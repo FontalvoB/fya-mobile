@@ -1,0 +1,15 @@
+Recursos generados con la herramienta integrada image_gen, habilidad imagegen. Generados el 16 de octubre de 2026. No se usaron fotografías externas ni imágenes de clientes reales.
+
+1. Fotografía editorial
+Archivo original: assets/welcome-original.png
+Versión integrada y optimizada: assets/welcome.jpg (800 x 1200, aproximadamente 174 KB).
+Usada en bienvenida e inicio.
+Prompt: Create a premium editorial lifestyle photograph for FYA Social Capital, a Colombian mobile app for pensioners and teachers. Portrait 1024x1536. A warm, authentic Colombian woman aged around 60, natural silver-streaked dark curly hair, wearing an elegant cream linen blouse, smiling softly while enjoying morning light on the terrace of a tasteful home. Lush tropical foliage, warm ivory plaster, deep forest-green architectural accents. Sophisticated analog film photography, natural skin texture, gentle grain, cinematic soft sunlight, warm human feeling, restrained luxury. Upper body portrait in lower central composition with some breathing room. No text, no logos, no documents, no money, no watermark. This is an aspirational welcome image, not a testimonial of an actual customer.
+
+2. Icono de aplicación
+Archivo original: assets/fya-icon-original.png
+Versión integrada: assets/fya-icon.png (1024 x 1024); favicon assets/fya-favicon.png.
+Usado en configuración Expo para Android/iOS y web. Es una propuesta gráfica, no un logotipo oficial suministrado.
+Prompt: Create a polished native mobile app icon for FYA Social Capital. Perfect square, edge-to-edge deep forest green #0D3429 background with no rounded outer corners. Centered elegant lowercase lettering exactly 'fya' in warm ivory, bold contemporary humanist sans serif, generous letter spacing just enough to remain readable, a small soft lime circular dot after the a. Flat vector-like minimalist typographic brand mark, crisp clean edges, no gradients, no shadows, no mockup, no device, no extra text. The wordmark should occupy the central 55 percent width, large margins suitable for Android adaptive icon safe zone. 1024x1024.
+
+Tipografías: Plus Jakarta Sans y DM Serif Display, distribuidas por @expo-google-fonts, con sus licencias originales en los paquetes. Iconografía: Feather mediante @expo/vector-icons.

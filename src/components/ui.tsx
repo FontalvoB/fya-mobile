@@ -214,13 +214,16 @@ export function Button({
 export function LinkButton({
   title,
   onPress,
+  accessibilityLabel,
 }: {
   title: string;
   onPress: () => void;
+  accessibilityLabel?: string;
 }) {
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel || title}
       onPress={onPress}
       style={({ pressed }) => ({
         minHeight: 44,

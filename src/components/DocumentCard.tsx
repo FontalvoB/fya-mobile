@@ -101,7 +101,9 @@ export function DocumentCard({
               resizeMode="contain"
             />
           )}
-          <Text style={s.label}>{value.name}</Text>
+          <Text style={s.label} numberOfLines={2}>
+            {value.name}
+          </Text>
           <Text style={s.small}>
             {value.mimeType} · {(value.size / 1024).toFixed(0)} KB
           </Text>
@@ -110,11 +112,13 @@ export function DocumentCard({
           </Text>
           <View style={s.between}>
             <LinkButton
-              title={"Reemplazar " + title.toLowerCase()}
+              title="Reemplazar"
+              accessibilityLabel={"Reemplazar " + title.toLowerCase()}
               onPress={pick}
             />
             <LinkButton
-              title={"Eliminar " + title.toLowerCase()}
+              title="Eliminar"
+              accessibilityLabel={"Eliminar " + title.toLowerCase()}
               onPress={() => {
                 onChange(undefined);
                 setError("");

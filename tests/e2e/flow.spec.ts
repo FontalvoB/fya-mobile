@@ -79,10 +79,24 @@ test("full application with conditional fields, documents, editing and tracking"
   await expect(
     page.getByText("Adjunta el recibo de servicio público y el desprendible"),
   ).toBeVisible();
-  await upload(page, "Seleccionar recibo de servicio público", 'incorrecto.txt', 'text/plain', Buffer.from('Archivo de prueba'));
-  await expect(page.getByText('Selecciona un PDF, JPG o PNG.')).toBeVisible();
-  await upload(page, "Seleccionar recibo de servicio público", 'grande.pdf', 'application/pdf', Buffer.alloc(5*1024*1024+1,32));
-  await expect(page.getByText('El archivo supera los 5 MB.', {exact:false})).toBeVisible();
+  await upload(
+    page,
+    "Seleccionar recibo de servicio público",
+    "incorrecto.txt",
+    "text/plain",
+    Buffer.from("Archivo de prueba"),
+  );
+  await expect(page.getByText("Selecciona un PDF, JPG o PNG.")).toBeVisible();
+  await upload(
+    page,
+    "Seleccionar recibo de servicio público",
+    "grande.pdf",
+    "application/pdf",
+    Buffer.alloc(5 * 1024 * 1024 + 1, 32),
+  );
+  await expect(
+    page.getByText("El archivo supera los 5 MB.", { exact: false }),
+  ).toBeVisible();
   await upload(page, "Seleccionar recibo de servicio público");
   await expect(
     page.getByText("recibo-demo.pdf", { exact: true }),
@@ -112,6 +126,8 @@ test("full application with conditional fields, documents, editing and tracking"
     })
     .click();
   await upload(page, "Seleccionar desprendible de pago", "mesada-demo.pdf");
+  await page.waitForTimeout(400);
+  await page.screenshot({path:'work/documentos-seleccionados.png'});
   await page.getByRole("button", { name: "Guardar y continuar" }).click();
   await page.getByRole("button", { name: "Editar residencia fiscal" }).click();
   await expect(
@@ -141,6 +157,45 @@ test("full application with conditional fields, documents, editing and tracking"
   await expect(
     page.getByText("Viabilidad preliminar favorable", { exact: true }),
   ).toBeVisible();
+  expect(errors).toEqual([]);
+  await page.getByRole("button", { name: "Volver al inicio" }).click();
+  await page.getByRole("button", { name: "Simular mi crédito" }).click();
+  await page
+    .getByRole("textbox", { name: "Ingresos mensuales (COP)", exact: true })
+    .fill("700000");
+  await page
+    .getByRole("button", { name: "Continuar con esta simulación" })
+    .click();
+  for (const heading of [
+    "Hablemos de ti.",
+    "Tu residencia fiscal.",
+    "Tu bienestar importa.",
+    "Tú tienes el control.",
+    "Tus soportes, aquí.",
+  ]) {
+    await expect(page.getByRole("heading", { name: heading })).toBeVisible();
+    await page.getByRole("button", { name: "Guardar y continuar" }).click();
+  }
+  await page
+    .getByRole("checkbox", {
+      name: "Revisé y confirmo la información de prueba",
+    })
+    .click();
+  await page
+    .getByRole("button", { name: "Confirmar con código de prueba" })
+    .click();
+  await page.getByRole("button", { name: "Usar código de prueba" }).click();
+  await page
+    .getByRole("button", { name: "Finalizar solicitud de prueba" })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Busquemos otro equilibrio." }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Ver seguimiento de prueba" }).click();
+  await expect(
+    page.getByText("Simulación no viable", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("No iniciada.", { exact: true })).toBeVisible();
   expect(errors).toEqual([]);
 });
 test("registration OTP and identity files", async ({ page }) => {

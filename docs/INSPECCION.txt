@@ -11,3 +11,4 @@ Deficiencias: botones sin acción (tabs, linterna, subida); documentos y OTP se 
 Decisiones confirmadas: solo app cliente; recibo obligatorio junto a soportes de solicitud. Defaults configurables de referencia: PDF/JPG/PNG, 5 MB, antigüedad 90 días. La antigüedad se valida contra fecha declarada, no por OCR. Reglas financieras y textos legales siguen siendo de prueba. Salud afirmativa requiere detalle, no provoca rechazo automático. Firma y desembolso fuera de alcance.
 
 Diseño: marfil cálido, verde bosque, lima suave; fotografía editorial original; jerarquía tipográfica amplia; acciones al alcance del pulgar; navegación nativa, campos agrupados, pasos editables, estados accesibles y movimiento reducido. React Native con Expo permite interfaz nativa y QA web auxiliar; Flutter sería viable pero el entorno dispone de Node/TypeScript y no Flutter ni Android SDK/Xcode.
+SHA256 de la referencia: 4233F01C722BB22337729FCD5C2A3FFDE4F2171A0783B1C0B62C3813A9983316

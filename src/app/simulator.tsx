@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Text, View } from "react-native";
 import Slider from "@react-native-community/slider";
-import { router, Redirect } from "expo-router";
+import { router, Redirect, useLocalSearchParams } from "expo-router";
 import {
   Screen,
   Button,
@@ -15,6 +15,7 @@ import {
 import { useSession } from "../state/session";
 import { estimate, money, validateLoan, Loan } from "../domain/model";
 export default function Simulator() {
+  const { edit } = useLocalSearchParams<{ edit?: string }>();
   const { draft, setDraft, identity } = useSession();
   const [error, setError] = useState("");
   const l = draft.loan,
@@ -41,7 +42,9 @@ export default function Simulator() {
               setError(issue);
               return;
             }
-            router.push({ pathname: "/application", params: { step: "0" } });
+            if (edit === "1" && router.canGoBack()) router.back();
+            else
+              router.push({ pathname: "/application", params: { step: "0" } });
           }}
         />
       }

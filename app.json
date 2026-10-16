@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "FYA · Tus próximos planes",
+    "name": "FYA",
     "slug": "fya-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,7 +8,10 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.fyasocialcapital.mobile"
+      "bundleIdentifier": "com.fyasocialcapital.mobile",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
