@@ -1,5 +1,11 @@
 import React from "react";
-import { Text, View, Image, Pressable } from "react-native";
+import {
+  Text,
+  View,
+  Image,
+  Pressable,
+  useWindowDimensions,
+} from "react-native";
 import { router, Redirect, Href } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSession } from "../state/session";
@@ -16,6 +22,8 @@ import {
 import { artwork, ActionTile, PhotoBanner } from "../components/visuals";
 export default function Home() {
   const { draft, identity, result } = useSession();
+  const { width } = useWindowDimensions();
+  const compact = width < 360;
   if (!identity) return <Redirect href="/" />;
   const tabs: {
     icon: React.ComponentProps<typeof Icon>["name"];
@@ -112,10 +120,14 @@ export default function Home() {
               <Text
                 style={[
                   s.title,
-                  { fontSize: 30, lineHeight: 35, color: "white" },
+                  {
+                    fontSize: compact ? 26 : 30,
+                    lineHeight: compact ? 31 : 35,
+                    color: "white",
+                  },
                 ]}
               >
-                Dale impulso{"\n"}a lo que sigue.
+                Tus planes.{"\n"}Más cerca.
               </Text>
               <Text style={[s.small, { color: "#D3E8DD" }]}>
                 Explora una cuota que se ajuste a tus planes.
@@ -124,7 +136,11 @@ export default function Home() {
             <Image
               source={artwork.plans}
               accessible={false}
-              style={{ width: 112, height: 142, borderRadius: 22 }}
+              style={{
+                width: compact ? 88 : 112,
+                height: 142,
+                borderRadius: 22,
+              }}
             />
           </View>
           <Button

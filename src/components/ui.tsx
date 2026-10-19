@@ -26,7 +26,7 @@ export const colors = {
   ink: "#102E2B",
   green: "#075C4B",
   deep: "#073C35",
-  muted: "#62746E",
+  muted: "#52665D",
   line: "#E0E9E4",
   lime: "#D5F568",
   white: "#FFFFFF",
