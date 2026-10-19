@@ -36,3 +36,21 @@ El build iOS final terminó con estado FINISHED y produjo un archivo `.tar.gz` p
 El build Android final terminó con estado FINISHED. Se descargó el APK de 94.360.884 bytes y se verificó la integridad CRC de sus 1.269 entradas, la presencia de AndroidManifest.xml y classes.dex, y bibliotecas para arm64-v8a, armeabi-v7a, x86 y x86_64. No se ha ejecutado en un dispositivo ni se ha hecho una comprobación independiente de su firma. Descarga: https://expo.dev/artifacts/eas/lMIliF90I8uKZBBO6K5szi2VqBck_0ODKglly_Q-sKI.apk
 
 Ambas compilaciones nativas finalizaron correctamente. No se ha publicado en App Store ni Google Play. iOS para dispositivos físicos requiere Apple Developer y provisión.
+
+## Verificación del rediseño 1.1.0 · 19 octubre 2026
+
+- TypeScript y ESLint: aprobados.
+- 10 pruebas de dominio: aprobadas.
+- Los 3 recorridos Playwright existentes vuelven a aprobar con el diseño final, incluyendo registro/OTP/identidad, solicitud completa, soportes inválidos y válidos, eliminación/reemplazo, edición, resultado favorable/no viable y navegación secundaria.
+- Exportación de bundles Android/iOS/web: aprobada. La primera ejecución aislada de Hermes falló con código 6; fuera del sandbox la exportación terminó correctamente. No se cambió el código para ocultar el error.
+- Las primeras pruebas de navegador no pudieron acceder al servidor aislado; se repitieron sobre localhost:8084 y pasaron. No se cuentan los intentos sin carga de la app como pruebas funcionales exitosas.
+- Capturas nuevas en docs/previews/v2. Se inspeccionaron bienvenida 320/390, inicio 390, simulador 320/390, registro, identidad, soportes, resultado, perfil, ayuda y créditos. Se corrigió el recorte del retrato, se simplificó el progreso duplicado y se hizo más visible la zona de selección de soportes.
+- Se recorrieron además siete vistas con preferencia de movimiento reducido en Chrome. Esto no sustituye una prueba de accesibilidad ni de animaciones en dispositivo físico.
+- Los cuatro JPEG nuevos suman 419.946 bytes. Manrope sustituye las dos familias anteriores en la app; las dependencias de fuentes antiguas fueron retiradas.
+- Siguen pendientes las pruebas físicas de teclado, selector nativo, cámara, haptics y rendimiento, así como los avisos transitivos de dependencias ya documentados.
+
+Compilaciones 1.1.0 solicitadas sobre el código 7a33ad1:
+- Android: https://expo.dev/accounts/fontalvob/projects/fya-mobile/builds/8e861603-dacb-46f9-9fa6-6321f45bfacd
+- iOS simulador: https://expo.dev/accounts/fontalvob/projects/fya-mobile/builds/6eb28167-ad51-4d66-af18-f40e164db332
+
+El resultado de estas compilaciones se actualiza al comprobar sus artefactos. Los enlaces 1.0.0 anteriores corresponden al diseño del 16 de octubre.

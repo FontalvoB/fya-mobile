@@ -16,3 +16,8 @@ La entrega final también incluye el APK Android generado correctamente en EAS y
 Los cambios se publicaron durante el desarrollo, después de cada bloque. Se verificó el SHA remoto de main. No se modificaron los repositorios existentes frontend-fya ni backend-fya.
 
 Los instaladores se construyen en Expo EAS; no contienen un backend. La firma Android se gestiona en EAS y ninguna clave de firma se guarda en Git. El artefacto iOS de esta entrega es para simulador: no equivale a un IPA para iPhone físico.
+
+## Rediseño solicitado el 19 de octubre
+
+- `ddecd76`: nueva dirección fintech, Manrope, cuatro recursos generados e integración por módulos.
+- `7a33ad1`: iteración del encuadre, formularios, soportes y versión 1.1.0; capturas adicionales en el recorrido automatizado.

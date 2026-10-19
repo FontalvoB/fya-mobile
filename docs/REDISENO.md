@@ -20,4 +20,4 @@ Manrope Regular/Medium/Bold/ExtraBold sustituye Jakarta y DM Serif en la interfa
 
 Los cuatro recursos nuevos están optimizados e integrados: lifestyle-v2.jpg (bienvenida), plans-v2.jpg (inicio, simulador, registro, créditos y resultado), documents-v2.jpg (identidad, soportes y seguimiento), learning-v2.jpg (inicio y ayuda). Las personas son ficticias y no representan testimonios. Se generaron con la herramienta integrada image_gen, no con una API externa del proyecto.
 
-Las comprobaciones y capturas finales se registrarán al completar la revisión visual. Los instaladores 1.0.0 del 16 de octubre corresponden al diseño anterior; no deben presentarse como el nuevo diseño.
+Las comprobaciones y capturas finales están en docs/QA.md y docs/previews/v2. Los instaladores 1.0.0 del 16 de octubre corresponden al diseño anterior; no deben presentarse como el nuevo diseño.

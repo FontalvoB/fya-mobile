@@ -2,6 +2,13 @@
 
 Aplicación nativa de autoservicio para pensionados y docentes. Frontend de demostración para Android e iOS, con Expo SDK 58, React Native, TypeScript, Expo Router, Reanimated y selección nativa de documentos. No usa un backend ni representa aprobaciones reales.
 
+## Rediseño 1.1.0
+
+Dirección fintech contemporánea elegida por el usuario. Nueva tipografía Manrope, fotografía e ilustraciones 3D originales, inicio con accesos rápidos, cifras protagonistas y formularios agrupados. Detalle por sección: [docs/REDISENO.md](docs/REDISENO.md). Prompts de los nuevos recursos: [docs/RECURSOS-V2.md](docs/RECURSOS-V2.md).
+
+![Bienvenida 1.1.0](docs/previews/v2/bienvenida-390.png)
+![Inicio 1.1.0](docs/previews/v2/v2-inicio-390.png)
+
 ## Desarrollo
 
 Node >= 22.13 (desarrollado con Node 24). Repositorio privado: https://github.com/FontalvoB/fya-mobile, rama `main`.
@@ -32,7 +39,12 @@ Si ese puerto está ocupado, usar `--port 8082` y establecer `FYA_BASE_URL=http:
 
 ## Instaladores Android e iOS
 
-Las dos compilaciones de esta entrega finalizaron correctamente:
+Compilaciones del rediseño 1.1.0 en ejecución:
+
+- [Android 1.1.0 en EAS](https://expo.dev/accounts/fontalvob/projects/fya-mobile/builds/8e861603-dacb-46f9-9fa6-6321f45bfacd).
+- [iOS simulador 1.1.0 en EAS](https://expo.dev/accounts/fontalvob/projects/fya-mobile/builds/6eb28167-ad51-4d66-af18-f40e164db332).
+
+Los siguientes instaladores son la versión anterior 1.0.0 (16 de octubre), no el rediseño:
 
 - [Descargar APK Android](https://expo.dev/artifacts/eas/lMIliF90I8uKZBBO6K5szi2VqBck_0ODKglly_Q-sKI.apk) (94,36 MB).
 - [Descargar app para simulador iOS](https://expo.dev/artifacts/eas/pnK6JuNOX5CXxWP_Z-3SSlDZvDvoOmFMU9JVLCPlG3Y.tar.gz) (23,37 MB).
@@ -81,7 +93,7 @@ Los documentos no se envían. Las referencias se conservan en memoria; Expo Docu
 
 ## Diseño y arquitectura
 
-Marfil, verde bosque y lima; Plus Jakarta Sans para lectura y DM Serif Display para títulos. Fotografía original e icono generados por IA, guardados en `assets/` y referenciados realmente por las pantallas y configuración nativa. La fotografía representa una persona ficticia, no un testimonio. El archivo optimizado pesa aproximadamente 174 KB. Prompts y procedencia: `docs/RECURSOS.txt`.
+Fondo gris verdoso, verde profundo y lima; Manrope Regular/Medium/Bold/ExtraBold para lectura, títulos y cifras. Fotografía original e icono generados por IA, guardados en `assets/` y referenciados realmente por las pantallas y configuración nativa. Las fotografías representan personas ficticias, no testimonios. Los cuatro recursos del rediseño suman unos 420 KB. Prompts y procedencia: `docs/RECURSOS-V2.md`; recursos de la primera versión: `docs/RECURSOS.txt`.
 
 Expo Router organiza la navegación sobre React Navigation. Reanimated anima entradas y cambios de contenido; se respeta reducir movimiento, incluyendo los modales. Safe areas, desplazamiento de formularios y KeyboardAvoidingView en iOS; Android usa resize. Controles con roles/etiquetas accesibles y superficies táctiles de 44–58 puntos.
 
