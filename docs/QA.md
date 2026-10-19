@@ -49,8 +49,10 @@ Ambas compilaciones nativas finalizaron correctamente. No se ha publicado en App
 - Los cuatro JPEG nuevos suman 419.946 bytes. Manrope sustituye las dos familias anteriores en la app; las dependencias de fuentes antiguas fueron retiradas.
 - Siguen pendientes las pruebas físicas de teclado, selector nativo, cámara, haptics y rendimiento, así como los avisos transitivos de dependencias ya documentados.
 
-Compilaciones 1.1.0 solicitadas sobre el código 7a33ad1:
-- Android: https://expo.dev/accounts/fontalvob/projects/fya-mobile/builds/8e861603-dacb-46f9-9fa6-6321f45bfacd
-- iOS simulador: https://expo.dev/accounts/fontalvob/projects/fya-mobile/builds/6eb28167-ad51-4d66-af18-f40e164db332
+Compilaciones 1.1.0 solicitadas sobre el código 778b4ba:
+- Android: https://expo.dev/accounts/fontalvob/projects/fya-mobile/builds/b9c852e6-4a5c-4cf7-9b1a-ce80b17c88f7
+- iOS simulador: https://expo.dev/accounts/fontalvob/projects/fya-mobile/builds/f60996e4-14e7-411f-96df-eded6ebd5081
 
 El resultado de estas compilaciones se actualiza al comprobar sus artefactos. Los enlaces 1.0.0 anteriores corresponden al diseño del 16 de octubre.
+
+Última iteración: se oscureció el texto secundario a #52665D. Contrastes calculados: 5,00:1 sobre lima, 5,33:1 sobre verde pálido, 5,70:1 sobre fondo y 5,46:1 sobre los paneles ilustrados. El inicio reduce la ilustración y ajusta el título en pantallas menores de 360 px. Las primeras compilaciones de 1.1.0 se cancelaron explícitamente para incluir estas mejoras; los IDs anteriores listados fueron sustituidos por los builds definitivos.

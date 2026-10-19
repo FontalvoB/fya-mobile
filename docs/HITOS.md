@@ -21,3 +21,6 @@ Los instaladores se construyen en Expo EAS; no contienen un backend. La firma An
 
 - `ddecd76`: nueva dirección fintech, Manrope, cuatro recursos generados e integración por módulos.
 - `7a33ad1`: iteración del encuadre, formularios, soportes y versión 1.1.0; capturas adicionales en el recorrido automatizado.
+
+- `449520e`: evidencia visual del rediseño y prompts de los recursos.
+- `778b4ba`: contraste del texto secundario y composición compacta del inicio.

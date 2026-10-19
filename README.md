@@ -41,8 +41,8 @@ Si ese puerto está ocupado, usar `--port 8082` y establecer `FYA_BASE_URL=http:
 
 Compilaciones del rediseño 1.1.0 en ejecución:
 
-- [Android 1.1.0 en EAS](https://expo.dev/accounts/fontalvob/projects/fya-mobile/builds/8e861603-dacb-46f9-9fa6-6321f45bfacd).
-- [iOS simulador 1.1.0 en EAS](https://expo.dev/accounts/fontalvob/projects/fya-mobile/builds/6eb28167-ad51-4d66-af18-f40e164db332).
+- [Android 1.1.0 en EAS](https://expo.dev/accounts/fontalvob/projects/fya-mobile/builds/b9c852e6-4a5c-4cf7-9b1a-ce80b17c88f7).
+- [iOS simulador 1.1.0 en EAS](https://expo.dev/accounts/fontalvob/projects/fya-mobile/builds/f60996e4-14e7-411f-96df-eded6ebd5081).
 
 Los siguientes instaladores son la versión anterior 1.0.0 (16 de octubre), no el rediseño:
 
