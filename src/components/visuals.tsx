@@ -38,7 +38,7 @@ export function ArtPanel({
       <Image
         source={artwork[kind]}
         accessible={false}
-        style={{ width: "38%", height: 168, alignSelf: "center" }}
+        style={{ width: "38%", height: 144, alignSelf: "center" }}
         resizeMode="cover"
       />
     </View>
@@ -139,7 +139,7 @@ const v = StyleSheet.create({
     backgroundColor: "#EAF4EE",
     borderRadius: 24,
     overflow: "hidden",
-    minHeight: 168,
+    minHeight: 144,
     borderWidth: 1,
     borderColor: "#DCECE2",
   },

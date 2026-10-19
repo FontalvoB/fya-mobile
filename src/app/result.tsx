@@ -46,20 +46,6 @@ export default function Result() {
           }
           caption="Este resultado es una simulación, no una aprobación de crédito."
         />
-        <View style={{ alignItems: "center", padding: 0 }}>
-          <View
-            style={{
-              width: 64,
-              height: 64,
-              borderRadius: 22,
-              backgroundColor: colors.lime,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Icon name={result.favorable ? "check" : "sliders"} size={28} />
-          </View>
-        </View>
         <Card dark>
           <Text style={[s.kicker, { color: colors.lime }]}>
             {result.favorable

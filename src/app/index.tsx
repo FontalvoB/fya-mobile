@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Text, ImageBackground, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  ImageBackground,
+  StyleSheet,
+  useWindowDimensions,
+} from "react-native";
 import { router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import {
@@ -15,6 +21,7 @@ import { artwork } from "../components/visuals";
 import { useSession } from "../state/session";
 export default function Welcome() {
   const { demo } = useSession();
+  const { width } = useWindowDimensions();
   return (
     <Screen
       back={false}
@@ -56,8 +63,8 @@ export default function Welcome() {
               { fontSize: 43, lineHeight: 47, letterSpacing: -2 },
             ]}
           >
-            Más vida.{"\n"}
-            <Text style={{ color: colors.green }}>Más posibilidades.</Text>
+            Tus planes.{"\n"}
+            <Text style={{ color: colors.green }}>Más cerca.</Text>
           </Text>
           <Text style={[s.text, { maxWidth: 350 }]}>
             Tu libranza, con claridad desde el primer paso. Para pensionados y
@@ -75,7 +82,12 @@ export default function Welcome() {
           <ImageBackground
             source={artwork.lifestyle}
             style={{ flex: 1 }}
-            imageStyle={{ resizeMode: "cover", width: "100%", height: "100%" }}
+            imageStyle={{
+              resizeMode: "cover",
+              width: "100%",
+              height: Math.min(width - 40, 580) * 1.5,
+              top: -35,
+            }}
           >
             <View
               style={{

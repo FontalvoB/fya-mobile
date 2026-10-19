@@ -163,27 +163,6 @@ export default function Application() {
       }
     >
       <Reveal key={step}>
-        <View
-          style={{ flexDirection: "row", gap: 5 }}
-          accessibilityLabel={`Paso ${step + 1}: ${steps[step]}`}
-        >
-          {steps.map((label, i) => (
-            <View key={label} style={{ flex: 1, gap: 5 }}>
-              <View
-                style={{
-                  height: 4,
-                  borderRadius: 4,
-                  backgroundColor: i <= step ? colors.green : colors.line,
-                }}
-              />
-              {i === step && (
-                <Text style={[s.small, { fontSize: 10, color: colors.green }]}>
-                  {String(i + 1).padStart(2, "0")}
-                </Text>
-              )}
-            </View>
-          ))}
-        </View>
         {step === 0 && (
           <>
             <Notice>
@@ -431,12 +410,8 @@ export default function Application() {
             <ArtPanel
               kind="documents"
               title="Tu solicitud toma forma"
-              caption={`${Number(!!draft.documents.utility) + Number(!!draft.documents.payslip)} de 2 soportes seleccionados`}
+              caption={`${Number(!!draft.documents.utility) + Number(!!draft.documents.payslip)} de 2 seleccionados · sin enviar`}
             />
-            <Notice>
-              Los archivos se seleccionan localmente. No se suben a un servidor
-              ni se validan oficialmente.
-            </Notice>
             <DocumentCard
               title="Recibo de servicio público"
               hint="Un recibo de energía, agua, gas u otro servicio, con tu dirección y fecha de los últimos 90 días."

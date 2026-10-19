@@ -2,7 +2,7 @@
   "expo": {
     "name": "FYA",
     "slug": "fya-mobile",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/fya-icon.png",
     "userInterfaceStyle": "light",

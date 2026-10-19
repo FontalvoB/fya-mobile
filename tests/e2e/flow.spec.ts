@@ -1,4 +1,15 @@
 import { test, expect, Page } from "@playwright/test";
+async function visualReady(page: Page) {
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+    await Promise.all(
+      Array.from(document.images).map((image) =>
+        image.decode().catch(() => undefined),
+      ),
+    );
+  });
+  await page.waitForTimeout(450);
+}
 async function upload(
   page: Page,
   label: string,
@@ -15,7 +26,11 @@ async function start(page: Page) {
   await page
     .getByRole("button", { name: "Explorar con un perfil de prueba" })
     .click();
+  await visualReady(page);
+  await page.screenshot({ path: "work/v2-inicio-390.png" });
   await page.getByRole("button", { name: "Simular mi crédito" }).click();
+  await visualReady(page);
+  await page.screenshot({ path: "work/v2-simulador.png" });
   await page
     .getByRole("button", { name: "Continuar con esta simulación" })
     .click();
@@ -26,6 +41,8 @@ test("full application with conditional fields, documents, editing and tracking"
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await start(page);
+  await visualReady(page);
+  await page.screenshot({ path: "work/v2-datos.png" });
   await page.getByRole("button", { name: "Guardar y continuar" }).click();
   await page.getByRole("button", { name: "Guardar y continuar" }).click();
   await expect(
@@ -73,7 +90,7 @@ test("full application with conditional fields, documents, editing and tracking"
     })
     .click();
   await page.getByRole("button", { name: "Guardar y continuar" }).click();
-  await page.waitForTimeout(400);
+  await visualReady(page);
   await page.screenshot({ path: "work/soportes.png" });
   await page.getByRole("button", { name: "Guardar y continuar" }).click();
   await expect(
@@ -126,7 +143,7 @@ test("full application with conditional fields, documents, editing and tracking"
     })
     .click();
   await upload(page, "Seleccionar desprendible de pago", "mesada-demo.pdf");
-  await page.waitForTimeout(400);
+  await visualReady(page);
   await page.screenshot({ path: "work/documentos-seleccionados.png" });
   await page.getByRole("button", { name: "Guardar y continuar" }).click();
   await page.getByRole("button", { name: "Editar residencia fiscal" }).click();
@@ -151,7 +168,7 @@ test("full application with conditional fields, documents, editing and tracking"
   await expect(
     page.getByText("Un paso más cerca.", { exact: true }),
   ).toBeVisible();
-  await page.waitForTimeout(400);
+  await visualReady(page);
   await page.screenshot({ path: "work/resultado.png" });
   await page.getByRole("button", { name: "Ver seguimiento de prueba" }).click();
   await expect(
@@ -201,6 +218,8 @@ test("full application with conditional fields, documents, editing and tracking"
 test("registration OTP and identity files", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Comenzar mi registro" }).click();
+  await visualReady(page);
+  await page.screenshot({ path: "work/v2-registro.png" });
   await page.getByRole("button", { name: "Continuar al código" }).click();
   await expect(page.getByText("Escribe tu primer nombre.")).toBeVisible();
   await page
@@ -226,6 +245,8 @@ test("registration OTP and identity files", async ({ page }) => {
   ).toBeVisible();
   await page.getByRole("button", { name: "Usar código de prueba" }).click();
   await page.getByRole("button", { name: "Verificar código" }).click();
+  await visualReady(page);
+  await page.screenshot({ path: "work/v2-identidad.png" });
   await page.getByRole("button", { name: "Continuar a revisión" }).click();
   await expect(
     page.getByText("Selecciona las dos caras de tu documento."),
@@ -249,7 +270,7 @@ test("responsive welcome and secondary screens", async ({ page }) => {
       .getByText("Tú decides", { exact: true })
       .boundingBox();
     expect(feature!.x + feature!.width).toBeLessThanOrEqual(width);
-    await page.waitForTimeout(400);
+    await visualReady(page);
     await page.screenshot({ path: `work/bienvenida-${width}.png` });
     expect(
       await page.evaluate(
@@ -260,7 +281,7 @@ test("responsive welcome and secondary screens", async ({ page }) => {
   await page
     .getByRole("button", { name: "Explorar con un perfil de prueba" })
     .click();
-  await page.waitForTimeout(400);
+  await visualReady(page);
   await page.screenshot({ path: "work/inicio.png" });
   await page.getByRole("button", { name: "Créditos", exact: true }).click();
   await expect(
