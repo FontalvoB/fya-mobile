@@ -56,3 +56,5 @@ Compilaciones 1.1.0 solicitadas sobre el código 778b4ba:
 El resultado de estas compilaciones se actualiza al comprobar sus artefactos. Los enlaces 1.0.0 anteriores corresponden al diseño del 16 de octubre.
 
 Última iteración: se oscureció el texto secundario a #52665D. Contrastes calculados: 5,00:1 sobre lima, 5,33:1 sobre verde pálido, 5,70:1 sobre fondo y 5,46:1 sobre los paneles ilustrados. El inicio reduce la ilustración y ajusta el título en pantallas menores de 360 px. Las primeras compilaciones de 1.1.0 se cancelaron explícitamente para incluir estas mejoras; los IDs anteriores listados fueron sustituidos por los builds definitivos.
+
+iOS 1.1.0 final: FINISHED. Archivo descargado de 23.619.879 bytes; las 276 entradas del tar se leyeron correctamente. Info.plist confirma versión 1.1.0, identificador com.fyasocialcapital.mobile y plataforma iphonesimulator. El build corresponde a 778b4ba6b3e978b207f287e7b0d7187578c36d41. No se ha ejecutado en Xcode ni en iPhone.
