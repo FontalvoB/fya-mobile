@@ -1,14 +1,25 @@
 import React from "react";
-import { Text } from "react-native";
+import { Text, View } from "react-native";
 import { router } from "expo-router";
-import { Screen, Card, Button, Icon, s } from "../components/ui";
+import { Screen, Card, Button, Icon, s, colors } from "../components/ui";
 import { useSession } from "../state/session";
 export default function Notifications() {
   const { result } = useSession();
   return (
     <Screen title="Tus novedades." eyebrow="NOTIFICACIONES">
       <Card>
-        <Icon name="bell" />
+        <View
+          style={{
+            width: 64,
+            height: 64,
+            borderRadius: 22,
+            backgroundColor: colors.lime,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Icon name="bell" size={28} />
+        </View>
         <Text style={s.h2}>
           {result ? "Tu simulación está lista" : "Todo está al día"}
         </Text>

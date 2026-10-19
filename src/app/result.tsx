@@ -1,3 +1,4 @@
+import { ArtPanel } from "../components/visuals";
 import React from "react";
 import { View, Text } from "react-native";
 import { router, Redirect } from "expo-router";
@@ -36,18 +37,27 @@ export default function Result() {
       }
     >
       <Reveal>
-        <View style={{ alignItems: "center", padding: 20 }}>
+        <ArtPanel
+          kind="plans"
+          title={
+            result.favorable
+              ? "Un avance para tus planes"
+              : "Ajustemos tu próximo paso"
+          }
+          caption="Este resultado es una simulación, no una aprobación de crédito."
+        />
+        <View style={{ alignItems: "center", padding: 0 }}>
           <View
             style={{
-              width: 110,
-              height: 110,
-              borderRadius: 55,
+              width: 64,
+              height: 64,
+              borderRadius: 22,
               backgroundColor: colors.lime,
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <Icon name={result.favorable ? "check" : "sliders"} size={45} />
+            <Icon name={result.favorable ? "check" : "sliders"} size={28} />
           </View>
         </View>
         <Card dark>

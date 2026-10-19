@@ -1,3 +1,4 @@
+import { PhotoBanner } from "../components/visuals";
 import React, { useState } from "react";
 import { Text, View, Pressable } from "react-native";
 import { Screen, Card, Icon, Notice, s } from "../components/ui";
@@ -27,11 +28,16 @@ export default function Help() {
   const [open, setOpen] = useState<number | null>(0);
   return (
     <Screen title="Estamos para orientarte." eyebrow="CÓMO FUNCIONA">
+      <PhotoBanner
+        title="Decide con claridad."
+        caption="Todo lo que necesitas saber, paso a paso."
+      />
       {items.map(([q, a], i) => (
         <Card key={q}>
           <Pressable
             accessibilityRole="button"
             accessibilityState={{ expanded: open === i }}
+            style={{ minHeight: 48, justifyContent: "center" }}
             onPress={() => setOpen(open === i ? null : i)}
           >
             <View style={s.between}>

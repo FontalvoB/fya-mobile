@@ -1,3 +1,4 @@
+import { ArtPanel, SectionHeading } from "../components/visuals";
 import React, { useState, useCallback } from "react";
 import { Text, View, Pressable, BackHandler } from "react-native";
 import {
@@ -162,83 +163,113 @@ export default function Application() {
       }
     >
       <Reveal key={step}>
+        <View
+          style={{ flexDirection: "row", gap: 5 }}
+          accessibilityLabel={`Paso ${step + 1}: ${steps[step]}`}
+        >
+          {steps.map((label, i) => (
+            <View key={label} style={{ flex: 1, gap: 5 }}>
+              <View
+                style={{
+                  height: 4,
+                  borderRadius: 4,
+                  backgroundColor: i <= step ? colors.green : colors.line,
+                }}
+              />
+              {i === step && (
+                <Text style={[s.small, { fontSize: 10, color: colors.green }]}>
+                  {String(i + 1).padStart(2, "0")}
+                </Text>
+              )}
+            </View>
+          ))}
+        </View>
         {step === 0 && (
           <>
             <Notice>
               Los datos se conservan mientras esta sesión esté abierta. Usa
               información ficticia.
             </Notice>
-            {(
-              [
-                ["firstName", "Primer nombre *"],
-                ["secondName", "Segundo nombre (opcional)"],
-                ["lastName", "Primer apellido *"],
-                ["secondLastName", "Segundo apellido (opcional)"],
-                ["docNumber", "Número de documento *"],
-                ["email", "Correo electrónico *"],
-                ["phone", "Celular *"],
-              ] as [keyof Profile, string][]
-            ).map(([key, label]) => (
-              <Field
-                key={key}
-                label={label}
-                value={p[key]}
-                onChangeText={(v) => profile({ [key]: v })}
-                keyboardType={
-                  key === "phone" || key === "docNumber"
-                    ? "number-pad"
-                    : key === "email"
-                      ? "email-address"
-                      : "default"
-                }
-                autoCapitalize={key === "email" ? "none" : "words"}
+            <SectionHeading number="01" title="Identidad y contacto" />
+            <Card>
+              {(
+                [
+                  ["firstName", "Primer nombre *"],
+                  ["secondName", "Segundo nombre (opcional)"],
+                  ["lastName", "Primer apellido *"],
+                  ["secondLastName", "Segundo apellido (opcional)"],
+                  ["docNumber", "Número de documento *"],
+                  ["email", "Correo electrónico *"],
+                  ["phone", "Celular *"],
+                ] as [keyof Profile, string][]
+              ).map(([key, label]) => (
+                <Field
+                  key={key}
+                  label={label}
+                  value={p[key]}
+                  onChangeText={(v) => profile({ [key]: v })}
+                  keyboardType={
+                    key === "phone" || key === "docNumber"
+                      ? "number-pad"
+                      : key === "email"
+                        ? "email-address"
+                        : "default"
+                  }
+                  autoCapitalize={key === "email" ? "none" : "words"}
+                />
+              ))}
+            </Card>
+            <SectionHeading number="02" title="Información personal" />
+            <Card>
+              <Text style={s.label}>Tipo de documento</Text>
+              <Segments
+                items={["CC", "CE"]}
+                value={p.docType}
+                onChange={(docType) => profile({ docType })}
               />
-            ))}
-            <Text style={s.label}>Tipo de documento</Text>
-            <Segments
-              items={["CC", "CE"]}
-              value={p.docType}
-              onChange={(docType) => profile({ docType })}
-            />
-            <Text style={s.label}>Género *</Text>
-            <Segments
-              items={["Femenino", "Masculino", "Otro"]}
-              value={p.gender}
-              onChange={(gender) => profile({ gender })}
-            />
-            <Field
-              label="Fecha de nacimiento * (AAAA-MM-DD)"
-              placeholder="1965-05-20"
-              value={p.birthDate}
-              onChangeText={(birthDate) => profile({ birthDate })}
-            />
-            {Number.isFinite(age(p.birthDate)) && (
-              <Text style={s.small}>
-                Edad calculada: {age(p.birthDate)} años
-              </Text>
-            )}
-            <Field
-              label="Fecha de expedición * (AAAA-MM-DD)"
-              value={p.expDate}
-              placeholder="1985-06-10"
-              onChangeText={(expDate) => profile({ expDate })}
-            />
-            {(
-              [
-                ["address", "Dirección de residencia *"],
-                ["city", "Ciudad *"],
-                ["department", "Departamento *"],
-                ["civil", "Estado civil *"],
-                ["occupation", "Ocupación *"],
-              ] as [keyof Profile, string][]
-            ).map(([key, label]) => (
-              <Field
-                key={key}
-                label={label}
-                value={p[key]}
-                onChangeText={(v) => profile({ [key]: v })}
+              <Text style={s.label}>Género *</Text>
+              <Segments
+                items={["Femenino", "Masculino", "Otro"]}
+                value={p.gender}
+                onChange={(gender) => profile({ gender })}
               />
-            ))}
+              <Field
+                label="Fecha de nacimiento * (AAAA-MM-DD)"
+                placeholder="1965-05-20"
+                value={p.birthDate}
+                onChangeText={(birthDate) => profile({ birthDate })}
+              />
+              {Number.isFinite(age(p.birthDate)) && (
+                <Text style={s.small}>
+                  Edad calculada: {age(p.birthDate)} años
+                </Text>
+              )}
+              <Field
+                label="Fecha de expedición * (AAAA-MM-DD)"
+                value={p.expDate}
+                placeholder="1985-06-10"
+                onChangeText={(expDate) => profile({ expDate })}
+              />
+            </Card>
+            <SectionHeading number="03" title="Dónde estás hoy" />
+            <Card>
+              {(
+                [
+                  ["address", "Dirección de residencia *"],
+                  ["city", "Ciudad *"],
+                  ["department", "Departamento *"],
+                  ["civil", "Estado civil *"],
+                  ["occupation", "Ocupación *"],
+                ] as [keyof Profile, string][]
+              ).map(([key, label]) => (
+                <Field
+                  key={key}
+                  label={label}
+                  value={p[key]}
+                  onChangeText={(v) => profile({ [key]: v })}
+                />
+              ))}
+            </Card>
           </>
         )}
         {step === 1 && (
@@ -397,6 +428,11 @@ export default function Application() {
         )}
         {step === 4 && (
           <>
+            <ArtPanel
+              kind="documents"
+              title="Tu solicitud toma forma"
+              caption={`${Number(!!draft.documents.utility) + Number(!!draft.documents.payslip)} de 2 soportes seleccionados`}
+            />
             <Notice>
               Los archivos se seleccionan localmente. No se suben a un servidor
               ni se validan oficialmente.
@@ -455,6 +491,11 @@ export default function Application() {
         )}
         {step === 5 && (
           <>
+            <SectionHeading
+              number="06"
+              title="Tu plan, en detalle"
+              detail="Todo listo para tu última revisión"
+            />
             <Card dark>
               <Text style={[s.kicker, { color: colors.lime }]}>
                 {draft.loan.product}

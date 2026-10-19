@@ -1,3 +1,4 @@
+import { ArtPanel, SectionHeading } from "../components/visuals";
 import React, { useState } from "react";
 import { Text } from "react-native";
 import { router } from "expo-router";
@@ -7,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Screen,
   Button,
+  Card,
   Field,
   Choice,
   Notice,
@@ -72,52 +74,60 @@ export default function Register() {
         />
       }
     >
-      <LinkButton
-        title="Completar con datos de ejemplo"
-        onPress={() => reset({ ...demoProfile, password: "DemoFya#2026!" })}
+      <ArtPanel
+        kind="plans"
+        title="Un nuevo comienzo"
+        caption="Crea tu perfil y explora tus posibilidades."
       />
-      <Controller
-        control={control}
-        name="docType"
-        render={({ field }) => (
-          <Segments
-            items={["CC", "CE"]}
-            value={field.value}
-            onChange={field.onChange}
-          />
-        )}
-      />
-      {fields.map(([name, label]) => (
+      <SectionHeading number="01" title="Tu información" />
+      <Card>
+        <LinkButton
+          title="Completar con datos de ejemplo"
+          onPress={() => reset({ ...demoProfile, password: "DemoFya#2026!" })}
+        />
         <Controller
-          key={name}
           control={control}
-          name={name}
-          render={({ field, fieldState }) => (
-            <Field
-              label={label}
+          name="docType"
+          render={({ field }) => (
+            <Segments
+              items={["CC", "CE"]}
               value={field.value}
-              onChangeText={field.onChange}
-              onBlur={field.onBlur}
-              error={fieldState.error?.message}
-              secureTextEntry={name === "password"}
-              autoCapitalize={
-                name === "email"
-                  ? "none"
-                  : name === "password"
-                    ? "none"
-                    : "words"
-              }
-              keyboardType={
-                name === "phone" || name === "docNumber"
-                  ? "number-pad"
-                  : name === "email"
-                    ? "email-address"
-                    : "default"
-              }
+              onChange={field.onChange}
             />
           )}
         />
-      ))}
+        {fields.map(([name, label]) => (
+          <Controller
+            key={name}
+            control={control}
+            name={name}
+            render={({ field, fieldState }) => (
+              <Field
+                label={label}
+                value={field.value}
+                onChangeText={field.onChange}
+                onBlur={field.onBlur}
+                error={fieldState.error?.message}
+                secureTextEntry={name === "password"}
+                autoCapitalize={
+                  name === "email"
+                    ? "none"
+                    : name === "password"
+                      ? "none"
+                      : "words"
+                }
+                keyboardType={
+                  name === "phone" || name === "docNumber"
+                    ? "number-pad"
+                    : name === "email"
+                      ? "email-address"
+                      : "default"
+                }
+              />
+            )}
+          />
+        ))}
+      </Card>
       <Text style={s.small}>
         Contraseña: 12 caracteres, mayúscula, minúscula, número y símbolo. No se
         almacena ni crea una cuenta real.

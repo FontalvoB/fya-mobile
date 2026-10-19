@@ -88,7 +88,7 @@ function OtpForm({ phase }: { phase: string }) {
         <View
           style={{
             alignSelf: "flex-start",
-            backgroundColor: colors.pale,
+            backgroundColor: colors.lime,
             padding: 18,
             borderRadius: 20,
           }}
@@ -105,7 +105,14 @@ function OtpForm({ phase }: { phase: string }) {
           keyboardType="number-pad"
           maxLength={6}
           autoComplete="one-time-code"
-          style={{ fontSize: 30, letterSpacing: 10, textAlign: "center" }}
+          style={{
+            fontSize: 30,
+            letterSpacing: 7,
+            textAlign: "center",
+            minHeight: 76,
+            backgroundColor: "#F3F8F4",
+            borderRadius: 18,
+          }}
         />
         <Text style={s.small}>Vigencia de prueba: 15 minutos · 3 intentos</Text>
       </Card>

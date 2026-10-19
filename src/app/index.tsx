@@ -11,6 +11,7 @@ import {
   colors,
   s,
 } from "../components/ui";
+import { artwork } from "../components/visuals";
 import { useSession } from "../state/session";
 export default function Welcome() {
   const { demo } = useSession();
@@ -37,80 +38,104 @@ export default function Welcome() {
     >
       <Reveal>
         <View style={{ gap: 12 }}>
-          <Text style={s.kicker}>FYA SOCIAL CAPITAL</Text>
-          <Text style={[s.title, { fontSize: 44, lineHeight: 48 }]}>
-            Lo que viene,{"\n"}también es tuyo.
+          <View
+            style={{
+              alignSelf: "flex-start",
+              backgroundColor: colors.lime,
+              paddingVertical: 7,
+              paddingHorizontal: 12,
+              borderRadius: 30,
+            }}
+          >
+            <Text style={s.kicker}>TU PRÓXIMO CAPÍTULO</Text>
+          </View>
+          <Text
+            accessibilityRole="header"
+            style={[
+              s.title,
+              { fontSize: 43, lineHeight: 47, letterSpacing: -2 },
+            ]}
+          >
+            Más vida.{"\n"}
+            <Text style={{ color: colors.green }}>Más posibilidades.</Text>
           </Text>
-          <Text style={s.text}>
-            Una nueva etapa. Nuevos planes. Tu crédito por libranza, paso a
-            paso.
+          <Text style={[s.text, { maxWidth: 350 }]}>
+            Tu libranza, con claridad desde el primer paso. Para pensionados y
+            docentes.
           </Text>
         </View>
         <View
           style={{
-            height: 310,
-            borderRadius: 28,
+            height: 320,
+            borderRadius: 30,
             overflow: "hidden",
             backgroundColor: colors.pale,
           }}
         >
           <ImageBackground
-            source={require("../../assets/welcome.jpg")}
+            source={artwork.lifestyle}
             style={{ flex: 1 }}
             imageStyle={{ resizeMode: "cover", width: "100%", height: "100%" }}
           >
+            <View
+              style={{
+                position: "absolute",
+                top: 16,
+                left: 16,
+                backgroundColor: "#FFFFFFEB",
+                paddingHorizontal: 12,
+                paddingVertical: 8,
+                borderRadius: 30,
+              }}
+            >
+              <Text style={[s.small, { color: colors.ink }]}>
+                Hecho para tu nueva etapa
+              </Text>
+            </View>
             <LinearGradient
-              colors={["transparent", "#0D3429DD"]}
+              colors={["transparent", "#073C35ED"]}
               style={[
                 StyleSheet.absoluteFill,
-                { justifyContent: "flex-end", padding: 22 },
+                { justifyContent: "flex-end", padding: 20 },
               ]}
             >
-              <View style={s.row}>
+              <View style={s.between}>
+                <View style={{ flex: 1, gap: 5 }}>
+                  <Text style={[s.h2, s.white]}>
+                    Tus planes siguen creciendo.
+                  </Text>
+                  <Text style={[s.small, { color: "#E5F4E8" }]}>
+                    Explora. Simula. Decide.
+                  </Text>
+                </View>
                 <View
                   style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: 18,
+                    width: 48,
+                    height: 48,
+                    borderRadius: 24,
                     backgroundColor: colors.lime,
                     alignItems: "center",
                     justifyContent: "center",
                   }}
                 >
-                  <Icon name="sun" size={18} />
-                </View>
-                <View>
-                  <Text style={[s.label, s.white]}>
-                    Más espacio para tus planes
-                  </Text>
-                  <Text style={[s.small, { color: "#DCE7DA" }]}>
-                    Pensionados y docentes
-                  </Text>
+                  <Icon name="arrow-up-right" size={25} />
                 </View>
               </View>
             </LinearGradient>
           </ImageBackground>
         </View>
-        <View
-          style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            gap: 16,
-            alignItems: "center",
-          }}
-        >
-          <View style={s.row}>
-            <Icon name="smartphone" size={18} />
-            <Text style={s.small}>A tu ritmo</Text>
-          </View>
-          <View style={s.row}>
-            <Icon name="eye" size={18} />
-            <Text style={s.small}>Cada paso, claro</Text>
-          </View>
-          <View style={s.row}>
-            <Icon name="lock" size={18} />
-            <Text style={s.small}>Tú decides</Text>
-          </View>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 18 }}>
+          {(["A tu ritmo", "Cada paso, claro", "Tú decides"] as const).map(
+            (label, i) => (
+              <View key={label} style={[s.row, { gap: 6 }]}>
+                <Icon
+                  name={(["smartphone", "eye", "sliders"] as const)[i]}
+                  size={16}
+                />
+                <Text style={s.small}>{label}</Text>
+              </View>
+            ),
+          )}
         </View>
       </Reveal>
     </Screen>

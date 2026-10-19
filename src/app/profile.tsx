@@ -1,7 +1,16 @@
 import React, { useState } from "react";
 import { Text, View } from "react-native";
 import { router } from "expo-router";
-import { Screen, Card, Button, InfoModal, Notice, s } from "../components/ui";
+import {
+  Screen,
+  Card,
+  Button,
+  InfoModal,
+  Notice,
+  s,
+  colors,
+  Icon,
+} from "../components/ui";
 import { useSession } from "../state/session";
 export default function Profile() {
   const { draft, reset } = useSession();
@@ -9,6 +18,21 @@ export default function Profile() {
   return (
     <Screen title="Tu espacio." eyebrow="PERFIL DE DEMOSTRACIÓN">
       <Card>
+        <View
+          style={{
+            width: 70,
+            height: 70,
+            borderRadius: 24,
+            backgroundColor: colors.lime,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text style={[s.title, { fontSize: 26 }]}>
+            {draft.profile.firstName.slice(0, 1)}
+            {draft.profile.lastName.slice(0, 1)}
+          </Text>
+        </View>
         <Text style={s.h2}>
           {draft.profile.firstName} {draft.profile.lastName}
         </Text>
@@ -19,7 +43,10 @@ export default function Profile() {
         </Text>
       </Card>
       <Card>
-        <Text style={s.h2}>Tus decisiones</Text>
+        <View style={s.row}>
+          <Icon name="sliders" />
+          <Text style={s.h2}>Tus decisiones</Text>
+        </View>
         <Text style={s.text}>
           Canales: {draft.declaration.channels.join(", ") || "Sin definir"}
         </Text>

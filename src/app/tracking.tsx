@@ -1,3 +1,4 @@
+import { ArtPanel } from "../components/visuals";
 import React from "react";
 import { Text, View } from "react-native";
 import { router } from "expo-router";
@@ -46,6 +47,17 @@ export default function Tracking() {
         />
       }
     >
+      <ArtPanel
+        kind="documents"
+        title={
+          result ? "Tu recorrido, organizado" : "Tu próximo paso empieza aquí"
+        }
+        caption={
+          result
+            ? "Consulta lo completado y lo que sigue."
+            : "Simula primero. Decide después."
+        }
+      />
       {result ? (
         <>
           <Card dark>
@@ -64,9 +76,9 @@ export default function Tracking() {
                 <View style={{ alignItems: "center" }}>
                   <View
                     style={{
-                      width: 34,
-                      height: 34,
-                      borderRadius: 17,
+                      width: 40,
+                      height: 40,
+                      borderRadius: 14,
                       backgroundColor: done ? colors.lime : colors.pale,
                       alignItems: "center",
                       justifyContent: "center",

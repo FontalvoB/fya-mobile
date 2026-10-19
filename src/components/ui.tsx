@@ -22,27 +22,27 @@ import Animated, {
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 export const colors = {
-  bg: "#F7F7EF",
-  ink: "#183D32",
-  green: "#174F3C",
-  deep: "#0D3429",
-  muted: "#63736B",
-  line: "#DDE3D8",
-  lime: "#DCF19A",
+  bg: "#F4F7F5",
+  ink: "#102E2B",
+  green: "#075C4B",
+  deep: "#073C35",
+  muted: "#62746E",
+  line: "#E0E9E4",
+  lime: "#D5F568",
   white: "#FFFFFF",
   error: "#A4352E",
-  pale: "#EDF1E6",
+  pale: "#E8F1EB",
 };
 export const fonts = {
-  regular: "Jakarta",
-  medium: "JakartaMedium",
-  bold: "JakartaBold",
-  display: "Editorial",
+  regular: "Manrope",
+  medium: "ManropeMedium",
+  bold: "ManropeBold",
+  display: "ManropeExtraBold",
 };
 export const s = StyleSheet.create({
   page: { flex: 1, backgroundColor: colors.bg },
   body: {
-    padding: 24,
+    padding: 20,
     paddingTop: 12,
     gap: 22,
     paddingBottom: 32,
@@ -60,7 +60,8 @@ export const s = StyleSheet.create({
   card: {
     backgroundColor: colors.white,
     borderRadius: 24,
-    padding: 22,
+    padding: 20,
+    boxShadow: "0px 4px 18px rgba(15, 53, 42, 0.035)",
     borderWidth: 1,
     borderColor: colors.line,
     gap: 14,
@@ -68,14 +69,15 @@ export const s = StyleSheet.create({
   kicker: {
     fontFamily: fonts.bold,
     fontSize: 11,
-    letterSpacing: 2,
+    letterSpacing: 1.4,
     color: colors.green,
     textTransform: "uppercase",
   },
   title: {
     fontFamily: fonts.display,
-    fontSize: 38,
-    lineHeight: 43,
+    fontSize: 34,
+    lineHeight: 40,
+    letterSpacing: -1.3,
     color: colors.ink,
   },
   h2: {
@@ -126,7 +128,7 @@ export const s = StyleSheet.create({
     paddingBottom: 12,
     borderTopWidth: 1,
     borderColor: colors.line,
-    backgroundColor: colors.bg,
+    backgroundColor: colors.white,
     gap: 8,
     width: "100%",
     maxWidth: 620,
@@ -185,6 +187,7 @@ export function Button({
         borderRadius: 18,
         paddingHorizontal: 22,
         backgroundColor: secondary ? colors.pale : colors.green,
+        boxShadow: secondary ? undefined : "0px 5px 14px rgba(7, 92, 75, 0.16)",
         opacity: disabled ? 0.45 : pressed ? 0.82 : 1,
         transform: [{ scale: pressed ? 0.985 : 1 }],
         flexDirection: "row",
@@ -330,7 +333,7 @@ export function Choice({
       style={({ pressed }) => ({
         borderWidth: 1.5,
         borderColor: selected ? colors.green : colors.line,
-        backgroundColor: selected ? "#EEF3E3" : "#FFF",
+        backgroundColor: selected ? "#ECF7DF" : "#FFF",
         borderRadius: 17,
         padding: 16,
         minHeight: 56,
@@ -496,12 +499,12 @@ export function Screen({
               <Text
                 style={{
                   fontFamily: fonts.bold,
-                  fontSize: 25,
+                  fontSize: 30,
                   letterSpacing: -1.5,
                   color: colors.ink,
                 }}
               >
-                fya<Text style={{ color: "#7D9B45" }}>•</Text>
+                fya<Text style={{ color: colors.green }}>↗</Text>
               </Text>
             )}
             <View style={s.pill}>
@@ -519,14 +522,14 @@ export function Screen({
                 now: Math.round(progress * 100),
               }}
               style={{
-                height: 5,
+                height: 6,
                 backgroundColor: colors.line,
                 borderRadius: 10,
               }}
             >
               <View
                 style={{
-                  height: 5,
+                  height: 6,
                   width: `${progress * 100}%`,
                   backgroundColor: colors.green,
                   borderRadius: 10,
@@ -579,7 +582,7 @@ export function InfoModal({
       <View
         style={{
           flex: 1,
-          backgroundColor: "#0D3429AA",
+          backgroundColor: "#073C35AA",
           justifyContent: "flex-end",
         }}
       >

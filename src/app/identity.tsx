@@ -1,3 +1,4 @@
+import { ArtPanel } from "../components/visuals";
 import React, { useState } from "react";
 import { View, Text, Image } from "react-native";
 import * as ImagePicker from "expo-image-picker";
@@ -85,6 +86,11 @@ export default function Identity() {
         />
       }
     >
+      <ArtPanel
+        kind="documents"
+        title={review ? "Expediente preparado" : "Que cada detalle se vea"}
+        caption="Buena luz, texto legible y las cuatro esquinas visibles."
+      />
       {review ? (
         <Reveal>
           <Card>

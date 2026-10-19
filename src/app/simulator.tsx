@@ -1,3 +1,4 @@
+import { ArtPanel, SectionHeading } from "../components/visuals";
 import React, { useState } from "react";
 import { Text, View } from "react-native";
 import Slider from "@react-native-community/slider";
@@ -49,6 +50,11 @@ export default function Simulator() {
         />
       }
     >
+      <SectionHeading
+        number="01"
+        title="Diseña tu simulación"
+        detail="Elige tu perfil para comenzar"
+      />
       <Segments
         items={["Pensionado", "Docente"]}
         value={l.type}
@@ -67,7 +73,19 @@ export default function Simulator() {
         <Text style={[s.small, { color: "#CCDCCF" }]}>
           CUOTA MENSUAL ESTIMADA
         </Text>
-        <Text style={[s.title, { fontSize: 44, color: colors.lime }]}>
+        <Text
+          adjustsFontSizeToFit
+          numberOfLines={1}
+          style={[
+            s.title,
+            {
+              fontSize: 43,
+              lineHeight: 52,
+              color: colors.lime,
+              fontVariant: ["tabular-nums"],
+            },
+          ]}
+        >
           {money(e.payment)}
         </Text>
         <View style={[s.divider, { backgroundColor: "#38604C" }]} />
@@ -121,6 +139,11 @@ export default function Simulator() {
           <Text style={s.small}>144 meses</Text>
         </View>
       </View>
+      <SectionHeading
+        number="02"
+        title="Tu capacidad mensual"
+        detail="Ingresos y deducciones, en un solo lugar"
+      />
       <Card>
         <Text style={s.kicker}>TU CAPACIDAD</Text>
         {(
@@ -148,6 +171,7 @@ export default function Simulator() {
           <Text style={s.label}>{money(e.capacity)}</Text>
         </View>
       </Card>
+      <SectionHeading number="03" title="Detalles de tu libranza" />
       <Card>
         <Text style={s.label}>{l.product}</Text>
         <Text style={s.text}>Pagaduría: {l.payer}</Text>
@@ -168,6 +192,11 @@ export default function Simulator() {
           monto o ampliar el plazo.
         </Notice>
       )}
+      <ArtPanel
+        kind="plans"
+        title="Encuentra tu equilibrio"
+        caption="Prueba diferentes montos y plazos antes de continuar."
+      />
       <Notice>
         Estimación ilustrativa con parámetros del prototipo. No incluye seguros
         ni cargos no definidos. No es una oferta ni aprobación.

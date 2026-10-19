@@ -1,3 +1,4 @@
+import { ArtPanel } from "../components/visuals";
 import React from "react";
 import { Text } from "react-native";
 import { router } from "expo-router";
@@ -5,6 +6,11 @@ import { Screen, Card, Icon, Button, Notice, s } from "../components/ui";
 export default function Credits() {
   return (
     <Screen title="Tus créditos." eyebrow="TODO EN UN LUGAR">
+      <ArtPanel
+        kind="plans"
+        title="Espacio para lo que viene"
+        caption="Aquí podrás consultar tus créditos cuando estén disponibles."
+      />
       <Card>
         <Icon name="credit-card" size={36} />
         <Text style={s.h2}>Aún no hay créditos para mostrar</Text>

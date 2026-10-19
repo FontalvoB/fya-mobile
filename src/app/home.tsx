@@ -1,6 +1,6 @@
 import React from "react";
-import { Text, View, ImageBackground, Pressable } from "react-native";
-import { router, Redirect } from "expo-router";
+import { Text, View, Image, Pressable } from "react-native";
+import { router, Redirect, Href } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSession } from "../state/session";
 import {
@@ -13,40 +13,54 @@ import {
   s,
   colors,
 } from "../components/ui";
+import { artwork, ActionTile, PhotoBanner } from "../components/visuals";
 export default function Home() {
   const { draft, identity, result } = useSession();
   if (!identity) return <Redirect href="/" />;
+  const tabs: {
+    icon: React.ComponentProps<typeof Icon>["name"];
+    label: string;
+    path: Href;
+  }[] = [
+    { icon: "home", label: "Inicio", path: "/home" },
+    { icon: "file-text", label: "Solicitudes", path: "/tracking" },
+    { icon: "credit-card", label: "Créditos", path: "/credits" },
+    { icon: "user", label: "Perfil", path: "/profile" },
+  ];
   return (
     <Screen
       back={false}
       footer={
         <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-          {[
-            ["home", "Inicio", "/home"],
-            ["file-text", "Solicitudes", "/tracking"],
-            ["credit-card", "Créditos", "/credits"],
-            ["user", "Perfil", "/profile"],
-          ].map(([icon, label, path]) => (
+          {tabs.map(({ icon, label, path }, i) => (
             <Pressable
               key={label}
               accessibilityRole="button"
               accessibilityLabel={label}
-              onPress={() => router.push(path as any)}
+              accessibilityState={{ selected: i === 0 }}
+              onPress={() => router.push(path)}
               style={{
-                minHeight: 54,
+                flex: 1,
+                minHeight: 60,
                 alignItems: "center",
                 justifyContent: "center",
                 gap: 5,
               }}
             >
-              <Icon
-                name={icon as any}
-                color={label === "Inicio" ? colors.green : colors.muted}
-              />
+              <View
+                style={{
+                  backgroundColor: i === 0 ? colors.lime : "transparent",
+                  paddingHorizontal: 17,
+                  paddingVertical: 5,
+                  borderRadius: 18,
+                }}
+              >
+                <Icon name={icon} color={i === 0 ? colors.ink : colors.muted} />
+              </View>
               <Text
                 style={[
                   s.small,
-                  { color: label === "Inicio" ? colors.green : colors.muted },
+                  { fontSize: 11, color: i === 0 ? colors.ink : colors.muted },
                 ]}
               >
                 {label}
@@ -58,9 +72,10 @@ export default function Home() {
     >
       <Reveal>
         <View style={s.between}>
-          <View style={{ gap: 6 }}>
-            <Text style={s.kicker}>QUÉ BUENO TENERTE AQUÍ</Text>
+          <View style={{ flex: 1, gap: 5 }}>
+            <Text style={s.kicker}>TU ESPACIO FYA</Text>
             <Text style={s.title}>Hola, {draft.profile.firstName}.</Text>
+            <Text style={s.text}>¿Qué plan tienes en mente?</Text>
           </View>
           <Pressable
             accessibilityRole="button"
@@ -69,65 +84,76 @@ export default function Home() {
             style={{
               width: 48,
               height: 48,
-              borderRadius: 24,
-              backgroundColor: "white",
+              borderRadius: 18,
+              backgroundColor: colors.white,
               alignItems: "center",
               justifyContent: "center",
+              borderWidth: 1,
+              borderColor: colors.line,
             }}
           >
             <Icon name="bell" />
           </Pressable>
         </View>
-        <View style={{ height: 280, borderRadius: 28, overflow: "hidden" }}>
-          <ImageBackground
-            source={require("../../assets/welcome.jpg")}
-            style={{ flex: 1 }}
-            imageStyle={{ resizeMode: "cover", width: "100%", height: "100%" }}
-          >
-            <LinearGradient
-              colors={["#0D342920", "#0D3429F5"]}
-              style={{
-                flex: 1,
-                justifyContent: "flex-end",
-                padding: 24,
-                gap: 10,
-              }}
-            >
-              <Text style={[s.kicker, { color: colors.lime }]}>
-                UN NUEVO CAPÍTULO
-              </Text>
-              <Text
-                style={[
-                  s.title,
-                  { fontSize: 32, lineHeight: 36, color: "white" },
-                ]}
-              >
-                Tus planes merecen{"\n"}el siguiente paso.
-              </Text>
-              <Text style={[s.small, { color: "#E4EBDD" }]}>
-                Libranza para pensionados y docentes.
-              </Text>
-            </LinearGradient>
-          </ImageBackground>
-        </View>
-        <Card dark>
+        <LinearGradient
+          colors={["#075C4B", "#052F2B"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{ borderRadius: 28, padding: 22, gap: 18, overflow: "hidden" }}
+        >
           <View style={s.between}>
-            <Text style={[s.label, { color: colors.lime }]}>
-              LIBRE INVERSIÓN
+            <Text style={[s.kicker, { color: colors.lime }]}>
+              LIBRANZA · LIBRE INVERSIÓN
             </Text>
             <Icon name="arrow-up-right" color={colors.lime} />
           </View>
-          <Text style={[s.h2, s.white]}>Dale forma a tu próximo plan</Text>
-          <Text style={[s.text, { color: "#BED0C3" }]}>
-            Explora un monto y conoce una cuota estimada antes de comenzar.
-          </Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+            <View style={{ flex: 1, gap: 10 }}>
+              <Text
+                style={[
+                  s.title,
+                  { fontSize: 30, lineHeight: 35, color: "white" },
+                ]}
+              >
+                Dale impulso{"\n"}a lo que sigue.
+              </Text>
+              <Text style={[s.small, { color: "#D3E8DD" }]}>
+                Explora una cuota que se ajuste a tus planes.
+              </Text>
+            </View>
+            <Image
+              source={artwork.plans}
+              accessible={false}
+              style={{ width: 112, height: 142, borderRadius: 22 }}
+            />
+          </View>
           <Button
             title="Simular mi crédito"
             secondary
             onPress={() => router.push("/simulator")}
           />
-        </Card>
-        {result ? (
+        </LinearGradient>
+        <View style={{ gap: 12 }}>
+          <Text style={s.h2}>Todo a la mano</Text>
+          <View style={{ flexDirection: "row", gap: 12 }}>
+            <ActionTile
+              title="Mi solicitud"
+              detail={
+                result ? "Consulta tu avance" : "Prepara tu siguiente paso"
+              }
+              icon="file-text"
+              accent
+              onPress={() => router.push("/tracking")}
+            />
+            <ActionTile
+              title="Cómo funciona"
+              detail="Resuelve tus dudas"
+              icon="compass"
+              onPress={() => router.push("/help")}
+            />
+          </View>
+        </View>
+        {result && (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Ver mi solicitud"
@@ -135,10 +161,10 @@ export default function Home() {
           >
             <Card>
               <View style={s.between}>
-                <Text style={s.h2}>Tu solicitud de prueba</Text>
+                <Text style={s.label}>Tu solicitud de prueba</Text>
                 <Icon name="arrow-right" />
               </View>
-              <Text style={s.text}>
+              <Text style={s.small}>
                 {result.favorable
                   ? "Viabilidad preliminar favorable"
                   : "Ajusta tu simulación"}{" "}
@@ -146,24 +172,17 @@ export default function Home() {
               </Text>
             </Card>
           </Pressable>
-        ) : (
-          <View style={s.row}>
-            <Icon name="compass" />
-            <Text style={[s.text, { flex: 1 }]}>
-              Tú eliges el ritmo. Puedes revisar y editar antes de finalizar.
-            </Text>
-          </View>
         )}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Cómo funciona"
-          onPress={() => router.push("/help")}
-        >
-          <View style={[s.between, { paddingVertical: 12 }]}>
-            <Text style={s.label}>¿Cómo funciona FYA?</Text>
-            <Icon name="arrow-right" />
+        <View style={{ gap: 12 }}>
+          <View style={s.between}>
+            <Text style={s.h2}>Tu próxima etapa</Text>
+            <Text style={s.kicker}>CONTIGO</Text>
           </View>
-        </Pressable>
+          <PhotoBanner
+            title="Más tiempo para tus planes."
+            caption="Pensionados y docentes · FYA Social Capital"
+          />
+        </View>
         <Notice>
           Perfil habilitado en modo de prueba. Ningún crédito, tasa o resultado
           representa una oferta real.

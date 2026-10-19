@@ -1,9 +1,16 @@
 import React, { useState } from "react";
-import { View, Text, ActivityIndicator, Image, Platform } from "react-native";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  Image,
+  Platform,
+  Pressable,
+} from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import { File } from "expo-file-system";
 import { LocalDocument, policy, validateDocument } from "../domain/model";
-import { Button, Icon, LinkButton, Notice, colors, s } from "./ui";
+import { Icon, LinkButton, Notice, colors, s } from "./ui";
 export function DocumentCard({
   title,
   hint,
@@ -65,11 +72,12 @@ export function DocumentCard({
     <View
       style={{
         borderWidth: 1,
-        borderColor: value ? colors.green : colors.line,
+        borderColor: value ? "#B7D7C4" : colors.line,
+        boxShadow: "0px 6px 20px rgba(15,53,42,0.035)",
         borderRadius: 24,
         padding: 20,
         backgroundColor: "white",
-        gap: 14,
+        gap: 16,
       }}
     >
       <View style={s.between}>
@@ -105,7 +113,10 @@ export function DocumentCard({
             {value.name}
           </Text>
           <Text style={s.small}>
-            {value.mimeType} · {(value.size / 1024).toFixed(0)} KB
+            {value.mimeType} ·{" "}
+            {value.size < 1024
+              ? `${value.size} B`
+              : `${(value.size / 1024).toFixed(0)} KB`}
           </Text>
           <Text style={[s.small, { color: colors.green }]}>
             Seleccionado en este dispositivo · sin enviar
@@ -127,12 +138,42 @@ export function DocumentCard({
           </View>
         </View>
       ) : (
-        <Button
-          title={"Seleccionar " + title.toLowerCase()}
-          secondary
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={"Seleccionar " + title.toLowerCase()}
           onPress={pick}
-          icon="upload"
-        />
+          style={({ pressed }) => ({
+            borderWidth: 1.5,
+            borderStyle: "dashed",
+            borderColor: "#A4BEB0",
+            borderRadius: 18,
+            minHeight: 136,
+            padding: 18,
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 10,
+            backgroundColor: pressed ? "#DFEDDE" : "#F4F8F3",
+          })}
+        >
+          <View
+            style={{
+              width: 42,
+              height: 42,
+              borderRadius: 15,
+              backgroundColor: colors.lime,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Icon name="upload" size={21} />
+          </View>
+          <Text style={[s.label, { textAlign: "center" }]}>
+            Toca para elegir tu archivo
+          </Text>
+          <Text style={[s.small, { textAlign: "center" }]}>
+            Desde los archivos de tu dispositivo
+          </Text>
+        </Pressable>
       )}
       <Text style={s.small}>
         PDF, JPG o PNG · máximo {policy.maxBytes / 1024 / 1024} MB
