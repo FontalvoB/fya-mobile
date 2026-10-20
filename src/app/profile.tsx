@@ -37,11 +37,20 @@ export default function Profile() {
           {draft.profile.firstName} {draft.profile.lastName}
         </Text>
         <Text style={s.text}>{draft.profile.email}</Text>
+        <Text style={s.label}>{draft.account.customerType}</Text>
         <Text style={s.text}>{draft.profile.phone}</Text>
         <Text style={s.small}>
           Documento terminado en {draft.profile.docNumber.slice(-4)}
         </Text>
       </Card>
+      <Button
+        secondary
+        title="Editar documentos de cuenta"
+        icon="folder"
+        onPress={() =>
+          router.push({ pathname: "/identity", params: { edit: "1" } })
+        }
+      />
       <Card>
         <View style={s.row}>
           <Icon name="sliders" />

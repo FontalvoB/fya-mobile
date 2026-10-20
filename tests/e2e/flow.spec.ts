@@ -29,6 +29,7 @@ async function start(page: Page) {
   await visualReady(page);
   await page.screenshot({ path: "work/v2-inicio-390.png" });
   await page.getByRole("button", { name: "Simular mi crédito" }).click();
+  await page.getByRole("radio", { name: "No", exact: true }).click();
   await visualReady(page);
   await page.screenshot({ path: "work/v2-simulador.png" });
   await page
@@ -94,11 +95,11 @@ test("full application with conditional fields, documents, editing and tracking"
   await page.screenshot({ path: "work/soportes.png" });
   await page.getByRole("button", { name: "Guardar y continuar" }).click();
   await expect(
-    page.getByText("Adjunta el recibo de servicio público y el desprendible"),
+    page.getByText("Adjunta el desprendible de pago obligatorio"),
   ).toBeVisible();
   await upload(
     page,
-    "Seleccionar recibo de servicio público",
+    "Seleccionar desprendible de pago",
     "incorrecto.txt",
     "text/plain",
     Buffer.from("Archivo de prueba"),
@@ -106,7 +107,7 @@ test("full application with conditional fields, documents, editing and tracking"
   await expect(page.getByText("Selecciona un PDF, JPG o PNG.")).toBeVisible();
   await upload(
     page,
-    "Seleccionar recibo de servicio público",
+    "Seleccionar desprendible de pago",
     "grande.pdf",
     "application/pdf",
     Buffer.alloc(5 * 1024 * 1024 + 1, 32),
@@ -114,35 +115,24 @@ test("full application with conditional fields, documents, editing and tracking"
   await expect(
     page.getByText("El archivo supera los 5 MB.", { exact: false }),
   ).toBeVisible();
-  await upload(page, "Seleccionar recibo de servicio público");
+  await upload(page, "Seleccionar desprendible de pago");
   await expect(
     page.getByText("recibo-demo.pdf", { exact: true }),
   ).toBeVisible();
   await page
-    .getByRole("button", { name: "Eliminar recibo de servicio público" })
+    .getByRole("button", { name: "Eliminar desprendible de pago" })
     .click();
   await expect(
     page.getByRole("button", {
-      name: "Seleccionar recibo de servicio público",
+      name: "Seleccionar desprendible de pago",
     }),
   ).toBeVisible();
-  await upload(page, "Seleccionar recibo de servicio público");
+  await upload(page, "Seleccionar desprendible de pago");
   await upload(
     page,
-    "Reemplazar recibo de servicio público",
+    "Reemplazar desprendible de pago",
     "recibo-reemplazado.pdf",
   );
-  await page
-    .getByRole("textbox", {
-      name: "Fecha de emisión del recibo * (AAAA-MM-DD)",
-    })
-    .fill(new Date().toISOString().slice(0, 10));
-  await page
-    .getByRole("checkbox", {
-      name: "El recibo corresponde a mi dirección de residencia",
-    })
-    .click();
-  await upload(page, "Seleccionar desprendible de pago", "mesada-demo.pdf");
   await visualReady(page);
   await page.screenshot({ path: "work/documentos-seleccionados.png" });
   await page.getByRole("button", { name: "Guardar y continuar" }).click();
@@ -253,11 +243,79 @@ test("registration OTP and identity files", async ({ page }) => {
   ).toBeVisible();
   await upload(page, "Seleccionar frente del documento", "frente.pdf");
   await upload(page, "Seleccionar reverso del documento", "reverso.pdf");
+  await page.getByRole("radio", { name: "Docente", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Tipo de acreditación *", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Acta de nombramiento", exact: true })
+    .click();
+  await upload(
+    page,
+    "Seleccionar documento de acreditación",
+    "nombramiento-demo.pdf",
+  );
+  await page
+    .getByRole("button", { name: "Departamento *", exact: true })
+    .click();
+  await page
+    .getByRole("textbox", { name: "Buscar departamento" })
+    .fill("atlantico");
+  await page.getByRole("button", { name: "Atlántico", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Ciudad o municipio *", exact: true })
+    .click();
+  await page
+    .getByRole("textbox", { name: "Buscar ciudad o municipio" })
+    .fill("barranquilla");
+  await page.getByRole("button", { name: "Barranquilla", exact: true }).click();
+  await page
+    .getByRole("textbox", { name: "Dirección de residencia *", exact: true })
+    .fill("Calle ficticia 12 #34-56");
+  await page.getByRole("radio", { name: "No", exact: true }).click();
+  await upload(
+    page,
+    "Seleccionar recibo de servicio público",
+    "servicio-demo.pdf",
+  );
+  await page
+    .getByRole("button", { name: "Fecha de emisión del recibo *", exact: true })
+    .click();
+  await page
+    .getByRole("button", {
+      name: `Seleccionar fecha ${new Date().toISOString().slice(0, 10)}`,
+      exact: true,
+    })
+    .click();
+  await page
+    .getByRole("checkbox", {
+      name: "El recibo corresponde a mi dirección de residencia",
+    })
+    .click();
+  await page.getByRole("button", { name: "Continuar a revisión" }).click();
+  await expect(
+    page.getByText("Adjunta el contrato de arrendamiento porque", {
+      exact: false,
+    }),
+  ).toBeVisible();
+  await upload(
+    page,
+    "Seleccionar contrato de arrendamiento",
+    "contrato-demo.pdf",
+  );
   await page.getByRole("button", { name: "Continuar a revisión" }).click();
   await page
     .getByRole("button", { name: "Simular revisión favorable" })
     .click();
   await expect(page.getByText("Hola, Ana.", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Simular mi crédito" }).click();
+  await expect(page.getByText("Docente", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("textbox", {
+      name: "Deducción de pensión (COP)",
+      exact: true,
+    }),
+  ).toBeVisible();
 });
 test("responsive welcome and secondary screens", async ({ page }) => {
   for (const width of [320, 390, 768]) {

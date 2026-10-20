@@ -9,12 +9,22 @@ import {
   Card,
   Field,
   Segments,
+  YesNo,
+  LinkButton,
   Notice,
   s,
   colors,
+  Icon,
 } from "../components/ui";
 import { useSession } from "../state/session";
-import { estimate, money, validateLoan, Loan } from "../domain/model";
+import {
+  estimate,
+  money,
+  validateLoan,
+  validateAccount,
+  Loan,
+  policy,
+} from "../domain/model";
 export default function Simulator() {
   const { edit } = useLocalSearchParams<{ edit?: string }>();
   const { draft, setDraft, identity } = useSession();
@@ -38,7 +48,7 @@ export default function Simulator() {
         <Button
           title="Continuar con esta simulación"
           onPress={() => {
-            const issue = validateLoan(l);
+            const issue = validateAccount(draft) || validateLoan(l);
             if (issue) {
               setError(issue);
               return;
@@ -53,22 +63,22 @@ export default function Simulator() {
       <SectionHeading
         number="01"
         title="Diseña tu simulación"
-        detail="Elige tu perfil para comenzar"
+        detail="Usamos el perfil acreditado al crear tu cuenta"
       />
-      <Segments
-        items={["Pensionado", "Docente"]}
-        value={l.type}
-        onChange={(type) =>
-          update({
-            type,
-            payer:
-              type === "Pensionado"
-                ? "FOPEP"
-                : "Secretaría de Educación (prueba)",
-            pensionDeduction: 0,
-          })
-        }
-      />
+      <Card>
+        <View style={s.between}>
+          <View style={s.row}>
+            <Icon name="user-check" />
+            <Text style={s.h2}>{draft.account.customerType}</Text>
+          </View>
+          <LinkButton
+            title="Editar perfil"
+            onPress={() =>
+              router.push({ pathname: "/identity", params: { edit: "1" } })
+            }
+          />
+        </View>
+      </Card>
       <Card dark>
         <Text style={[s.small, { color: "#CCDCCF" }]}>
           CUOTA MENSUAL ESTIMADA
@@ -171,7 +181,40 @@ export default function Simulator() {
           <Text style={s.label}>{money(e.capacity)}</Text>
         </View>
       </Card>
-      <SectionHeading number="03" title="Detalles de tu libranza" />
+      <SectionHeading number="03" title="Tu acompañamiento" />
+      <Card>
+        <YesNo
+          label="¿Te acompaña un asesor?"
+          value={l.hasAdviser}
+          onChange={(hasAdviser) =>
+            update({ hasAdviser, adviserCode: hasAdviser ? l.adviserCode : "" })
+          }
+        />
+        {l.hasAdviser === true ? (
+          <>
+            <Field
+              label="Código del asesor *"
+              value={l.adviserCode}
+              maxLength={policy.adviserCodeMaxLength}
+              autoCapitalize="characters"
+              autoCorrect={false}
+              placeholder="Código entregado por tu asesor"
+              onChangeText={(adviserCode) =>
+                update({ adviserCode: adviserCode.trim() })
+              }
+            />
+            <Text style={s.small}>
+              Se asociará a esta solicitud para su futura gestión de comisiones.
+              En esta demo no verificamos el código contra un registro real.
+            </Text>
+          </>
+        ) : l.hasAdviser === false ? (
+          <Text style={s.small}>
+            Realizas esta solicitud directamente, sin código de asesor.
+          </Text>
+        ) : null}
+      </Card>
+      <SectionHeading number="04" title="Detalles de tu libranza" />
       <Card>
         <Text style={s.label}>{l.product}</Text>
         <Text style={s.text}>Pagaduría: {l.payer}</Text>

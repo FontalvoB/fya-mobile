@@ -57,6 +57,11 @@ export default function Result() {
             {money(result.payment)} / mes · {result.months} meses
           </Text>
           <Text style={[s.small, { color: "#CFDDCD" }]}>{result.id}</Text>
+          <Text style={[s.small, { color: "#CFDDCD" }]}>
+            {result.adviserCode
+              ? `Código del asesor: ${result.adviserCode}`
+              : "Solicitud directa · sin asesor"}
+          </Text>
         </Card>
         <Card>
           {[

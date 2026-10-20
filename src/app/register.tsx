@@ -1,3 +1,5 @@
+import { SelectField } from "../components/SelectionFields";
+import { docTypes } from "../domain/catalogs";
 import { ArtPanel, SectionHeading } from "../components/visuals";
 import React, { useState } from "react";
 import { Text } from "react-native";
@@ -13,7 +15,6 @@ import {
   Choice,
   Notice,
   LinkButton,
-  Segments,
   s,
 } from "../components/ui";
 import { useSession } from "../state/session";
@@ -89,8 +90,9 @@ export default function Register() {
           control={control}
           name="docType"
           render={({ field }) => (
-            <Segments
-              items={["CC", "CE"]}
+            <SelectField
+              label="Tipo de documento *"
+              options={docTypes}
               value={field.value}
               onChange={field.onChange}
             />

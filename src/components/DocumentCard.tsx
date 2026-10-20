@@ -119,7 +119,9 @@ export function DocumentCard({
               : `${(value.size / 1024).toFixed(0)} KB`}
           </Text>
           <Text style={[s.small, { color: colors.green }]}>
-            Seleccionado en este dispositivo · sin enviar
+            {value.demo
+              ? "Archivo ficticio de demostración · sin enviar"
+              : "Seleccionado en este dispositivo · sin enviar"}
           </Text>
           <View style={s.between}>
             <LinkButton

@@ -2,7 +2,7 @@ import { ArtPanel } from "../components/visuals";
 import React, { useState } from "react";
 import { View, Text, Image } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import {
   Screen,
   Button,
@@ -14,10 +14,12 @@ import {
   Reveal,
   s,
 } from "../components/ui";
-import { DocumentCard } from "../components/DocumentCard";
+import { AccountDocuments } from "../components/AccountDocuments";
+import { validateAccount } from "../domain/model";
 import { useSession } from "../state/session";
 export default function Identity() {
   const { draft, setDraft, setIdentity } = useSession();
+  const { edit } = useLocalSearchParams<{ edit?: string }>();
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
   const [review, setReview] = useState(false);
@@ -56,21 +58,33 @@ export default function Identity() {
   }
   return (
     <Screen
-      title={review ? "Todo listo para revisar." : "Tu identidad, paso a paso."}
+      title={review ? "Todo listo para revisar." : "Tu cuenta, paso a paso."}
       eyebrow="TU CUENTA · 03 / 03"
       progress={review ? 1 : 0.7}
       subtitle={
         review
           ? "Este expediente permanece en tu dispositivo. La revisión que sigue es una simulación."
-          : "Adjunta ambas caras de tu documento. El recibo de servicio público se solicitará más adelante."
+          : "Reúne identidad, acreditación y residencia para crear tu cuenta."
       }
       footer={
         <Button
           busy={busy}
-          title={review ? "Simular revisión favorable" : "Continuar a revisión"}
+          title={
+            edit === "1"
+              ? "Guardar documentos de cuenta"
+              : review
+                ? "Simular revisión favorable"
+                : "Continuar a revisión"
+          }
           onPress={async () => {
-            if (!draft.documents.front || !draft.documents.back) {
-              setError("Selecciona las dos caras de tu documento.");
+            const issue = validateAccount(draft);
+            if (issue) {
+              setError(issue);
+              return;
+            }
+            if (edit === "1") {
+              setError("");
+              router.back();
               return;
             }
             if (!review) {
@@ -98,10 +112,15 @@ export default function Identity() {
               "Correo: código de prueba confirmado",
               "Celular: código de prueba confirmado",
               "Documento: archivos seleccionados localmente",
+              `Perfil: ${draft.account.customerType} · ${draft.account.accreditationType}`,
+              "Acreditación y recibo: seleccionados localmente",
+              draft.account.ownsHome
+                ? "Vivienda propia declarada"
+                : "Contrato de arrendamiento seleccionado",
               "Revisión del analista: pendiente de simulación",
             ].map((v, i) => (
               <View key={v} style={s.row}>
-                <Icon name={i === 3 ? "clock" : "check-circle"} />
+                <Icon name={i === 6 ? "clock" : "check-circle"} />
                 <Text style={[s.text, { flex: 1 }]}>{v}</Text>
               </View>
             ))}
@@ -117,28 +136,7 @@ export default function Identity() {
         </Reveal>
       ) : (
         <>
-          <DocumentCard
-            title="Frente del documento"
-            hint="Buena luz, sin reflejos y con las cuatro esquinas visibles."
-            value={draft.documents.front}
-            onChange={(v) =>
-              setDraft((d) => ({
-                ...d,
-                documents: { ...d.documents, front: v },
-              }))
-            }
-          />
-          <DocumentCard
-            title="Reverso del documento"
-            hint="Asegúrate de que el código y el texto se puedan leer."
-            value={draft.documents.back}
-            onChange={(v) =>
-              setDraft((d) => ({
-                ...d,
-                documents: { ...d.documents, back: v },
-              }))
-            }
-          />
+          <AccountDocuments />
           <Card>
             <Text style={s.h2}>Una selfie, si quieres</Text>
             <Text style={s.text}>

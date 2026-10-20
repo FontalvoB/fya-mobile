@@ -1,7 +1,8 @@
+import { router } from "expo-router";
 import { PhotoBanner } from "../components/visuals";
 import React, { useState } from "react";
 import { Text, View, Pressable } from "react-native";
-import { Screen, Card, Icon, Notice, s } from "../components/ui";
+import { Screen, Card, Icon, Notice, Button, s } from "../components/ui";
 const items = [
   [
     "¿Cómo funciona el recorrido?",
@@ -9,7 +10,7 @@ const items = [
   ],
   [
     "¿Qué documentos necesito?",
-    "Documento de identidad por ambas caras, recibo de servicio público de los últimos 90 días y desprendible de pago. PDF, JPG o PNG de máximo 5 MB por archivo.",
+    "Para crear la cuenta: identidad por ambas caras, acreditación de pensionado/docente y recibo de servicio público de los últimos 90 días. Si la vivienda no es propia, contrato de arrendamiento. Durante la solicitud: desprendible de pago. PDF, JPG o PNG de máximo 5 MB por archivo.",
   ],
   [
     "¿Se envía mi información?",
@@ -31,6 +32,11 @@ export default function Help() {
       <PhotoBanner
         title="Decide con claridad."
         caption="Todo lo que necesitas saber, paso a paso."
+      />
+      <Button
+        title="Conversar con el asistente"
+        icon="message-circle"
+        onPress={() => router.push("/chat")}
       />
       {items.map(([q, a], i) => (
         <Card key={q}>

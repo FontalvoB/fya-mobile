@@ -74,7 +74,12 @@ const citiesByDepartment: Record<string, string[]> = {
     "Anserma",
     "Supía",
   ],
-  Caquetá: ["Florencia", "San Vicente del Caguán", "Puerto Rico", "El Doncello"],
+  Caquetá: [
+    "Florencia",
+    "San Vicente del Caguán",
+    "Puerto Rico",
+    "El Doncello",
+  ],
   Casanare: [
     "Yopal",
     "Aguazul",
@@ -206,7 +211,14 @@ const citiesByDepartment: Record<string, string[]> = {
     "Málaga",
     "Barbosa",
   ],
-  Sucre: ["Sincelejo", "Corozal", "San Marcos", "Tolú", "Sampués", "San Onofre"],
+  Sucre: [
+    "Sincelejo",
+    "Corozal",
+    "San Marcos",
+    "Tolú",
+    "Sampués",
+    "San Onofre",
+  ],
   Tolima: [
     "Ibagué",
     "Espinal",
@@ -241,7 +253,10 @@ const citiesByDepartment: Record<string, string[]> = {
 
 // Extend the existing curated choices with the public DANE snapshot.
 for (const [department, cities] of Object.entries(catalogue)) {
-  citiesByDepartment[department] = [...(citiesByDepartment[department] || []), ...cities.map(city => city.name)];
+  citiesByDepartment[department] = [
+    ...(citiesByDepartment[department] || []),
+    ...cities.map((city) => city.name),
+  ];
 }
 for (const department of Object.keys(citiesByDepartment)) {
   citiesByDepartment[department] = [
@@ -279,7 +294,17 @@ export const genders = ["Femenino", "Masculino", "Otro"];
 
 export const docTypes = ["CC", "CE"];
 
-export const isLocation = (department: string, city: string) => citiesOf(department).includes(city);
-export const accreditationTypes = ["Acta de nombramiento", "Resolución", "Otro documento de acreditación"];
+export const isLocation = (department: string, city: string) =>
+  citiesOf(department).includes(city);
+export const accreditationTypes = [
+  "Acta de nombramiento",
+  "Resolución",
+  "Otro documento de acreditación",
+];
 export const utilityTypes = ["Energía", "Agua", "Gas", "Otro"];
-export const normalizeSearch = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+export const normalizeSearch = (value: string) =>
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();

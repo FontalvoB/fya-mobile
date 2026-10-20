@@ -1,8 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  freshDraft,
-  demoProfile,
+  demoDraft,
+  validateAccount,
   estimate,
   validateDocument,
   validateStep,
@@ -13,8 +13,8 @@ import {
 } from "../src/domain/model";
 import { DemoOtp, demoService } from "../src/services/demo";
 function complete() {
-  const d = freshDraft();
-  d.profile = { ...demoProfile };
+  const d = demoDraft();
+  d.loan.hasAdviser = false;
   d.declaration = {
     ...d.declaration,
     us: false,
@@ -25,8 +25,6 @@ function complete() {
     dataConsent: true,
     channels: ["Correo"],
     commercial: false,
-    utilityDate: new Date().toISOString().slice(0, 10),
-    addressConfirmed: true,
     reviewed: true,
   };
   d.documents.utility = {
@@ -75,8 +73,8 @@ test("health affirmative needs details and all questions need answers", () => {
 test("rejects expired and future receipt dates", () => {
   const d = complete();
   for (const date of ["2020-01-01", "2099-01-01", "bad", "2026-02-31"]) {
-    d.declaration.utilityDate = date;
-    assert.ok(validateStep(d, 4));
+    d.account.utilityDate = date;
+    assert.ok(validateAccount(d));
   }
 });
 test("invalid calendar date does not throw", () => {
@@ -120,4 +118,59 @@ test("submit is validated, idempotent and yields distinct outcomes", async () =>
   assert.equal(no.favorable, false);
   delete d.documents.utility;
   await assert.rejects(demoService.submit(d, "c"));
+});
+
+test("account requires accreditation for the declared profile", () => {
+  const d = complete();
+  delete d.documents.accreditation;
+  assert.match(validateAccount(d)!, /acredita/);
+  d.documents.accreditation = { ...d.documents.utility! };
+  d.account.customerType = "";
+  assert.match(validateAccount(d)!, /pensionado o docente/);
+});
+test("non-owned housing requires a valid lease; owned housing does not", () => {
+  const d = complete();
+  assert.equal(validateAccount(d), undefined);
+  d.account.ownsHome = false;
+  assert.match(validateAccount(d)!, /arrendamiento/);
+  d.documents.lease = { ...d.documents.utility!, mimeType: "text/plain" };
+  assert.ok(validateAccount(d));
+  d.documents.lease = { ...d.documents.utility! };
+  assert.equal(validateAccount(d), undefined);
+});
+test("loan supports direct requests and requires a code only with adviser", () => {
+  const d = complete();
+  assert.equal(validateLoan(d.loan), undefined);
+  d.loan.hasAdviser = true;
+  assert.match(validateLoan(d.loan)!, /código/);
+  d.loan.adviserCode = "ASESOR-DEMO";
+  assert.equal(validateLoan(d.loan), undefined);
+  d.loan.hasAdviser = false;
+  assert.ok(validateLoan(d.loan));
+});
+test("utility belongs to account validation and payslip to application support", () => {
+  const d = complete();
+  delete d.documents.utility;
+  assert.equal(validateStep(d, 4), undefined);
+  assert.ok(validateAccount(d));
+  d.documents.utility = { ...d.documents.payslip! };
+  delete d.documents.payslip;
+  assert.equal(validateAccount(d), undefined);
+  assert.match(validateStep(d, 4)!, /desprendible/);
+});
+test("inconsistent residence and account simulation profiles are rejected", () => {
+  const d = complete();
+  d.profile.city = "Medellín";
+  assert.ok(validateAccount(d));
+  d.profile.city = "Bogotá";
+  d.loan.type = "Docente";
+  assert.match(validateAll(d)!, /perfil/);
+});
+test("adviser reference is preserved in the submitted snapshot", async () => {
+  const d = complete();
+  d.loan.hasAdviser = true;
+  d.loan.adviserCode = "ASESOR-DEMO";
+  const r = await demoService.submit(d, "adviser-snapshot");
+  d.loan.adviserCode = "CHANGED";
+  assert.equal(r.adviserCode, "ASESOR-DEMO");
 });

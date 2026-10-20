@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   TextInputProps,
   Modal,
+  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Feather from "@expo/vector-icons/Feather";
@@ -154,7 +155,15 @@ export function Icon({
   size?: number;
   color?: string;
 }) {
-  return <Feather name={name} size={size} color={color} />;
+  return (
+    <Feather
+      name={name}
+      size={size}
+      color={color}
+      accessible={false}
+      aria-hidden={true}
+    />
+  );
 }
 export function Button({
   title,
@@ -443,6 +452,8 @@ export function Screen({
   back = true,
   progress,
   onBack,
+  assistant = true,
+  autoScroll = false,
 }: {
   children: React.ReactNode;
   title?: string;
@@ -452,7 +463,10 @@ export function Screen({
   back?: boolean;
   progress?: number;
   onBack?: () => void;
+  assistant?: boolean;
+  autoScroll?: boolean;
 }) {
+  const scrollRef = useRef<React.ComponentRef<typeof ScrollView>>(null);
   return (
     <SafeAreaView style={s.page}>
       <KeyboardAvoidingView
@@ -496,21 +510,47 @@ export function Screen({
                 <Icon name="arrow-left" />
               </Pressable>
             ) : (
-              <Text
-                style={{
-                  fontFamily: fonts.bold,
-                  fontSize: 30,
-                  letterSpacing: -1.5,
-                  color: colors.ink,
-                }}
-              >
-                fya<Text style={{ color: colors.green }}>↗</Text>
-              </Text>
+              <View style={{ width: 118, height: 48, overflow: "hidden" }}>
+                <Image
+                  source={require("../../assets/logoFyA.png")}
+                  accessibilityLabel="FYA Social Capital"
+                  resizeMode="contain"
+                  style={{
+                    position: "absolute",
+                    width: 184,
+                    height: 108,
+                    left: -32,
+                    top: -30,
+                  }}
+                />
+              </View>
             )}
-            <View style={s.pill}>
-              <Text style={[s.small, { fontSize: 10, letterSpacing: 1 }]}>
-                DEMO · SIN ENVÍOS
-              </Text>
+            <View style={[s.row, { gap: 8 }]}>
+              <View style={s.pill}>
+                <Text
+                  accessibilityLabel="Demostración local, sin envíos"
+                  style={[s.small, { fontSize: 10, letterSpacing: 1 }]}
+                >
+                  DEMO
+                </Text>
+              </View>
+              {assistant && (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Abrir asistente de ayuda"
+                  onPress={() => router.push("/chat")}
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: 16,
+                    backgroundColor: colors.lime,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Icon name="message-circle" size={21} />
+                </Pressable>
+              )}
             </View>
           </View>
           {progress !== undefined && (
@@ -539,6 +579,10 @@ export function Screen({
           )}
         </View>
         <ScrollView
+          ref={scrollRef}
+          onContentSizeChange={() => {
+            if (autoScroll) scrollRef.current?.scrollToEnd({ animated: false });
+          }}
           key={title}
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={s.body}

@@ -1,3 +1,11 @@
+import { SelectField, DateField } from "../components/SelectionFields";
+import { ResidenceFields } from "../components/ResidenceFields";
+import {
+  civilStatuses,
+  occupations,
+  genders,
+  docTypes,
+} from "../domain/catalogs";
 import { ArtPanel, SectionHeading } from "../components/visuals";
 import React, { useState, useCallback } from "react";
 import { Text, View, Pressable, BackHandler } from "react-native";
@@ -12,7 +20,6 @@ import {
   Button,
   Card,
   Field,
-  Segments,
   YesNo,
   Choice,
   Notice,
@@ -49,7 +56,7 @@ const subtitles = [
   "Dos preguntas para completar tu declaración FATCA / CRS.",
   "Responde cada pregunta. Un Sí necesita contexto, no implica un rechazo automático.",
   "Elige cómo contactarte y revisa las autorizaciones de prueba.",
-  "Adjunta el recibo de servicio público y tu último desprendible.",
+  "Adjunta tu último desprendible. Tu recibo ya forma parte de la cuenta.",
   "Revisa cada sección. Puedes volver y cambiar lo que necesites.",
 ];
 export default function Application() {
@@ -90,6 +97,16 @@ export default function Application() {
     setDraft((d) => ({
       ...d,
       profile: { ...d.profile, ...v },
+      account: {
+        ...d.account,
+        addressConfirmed: ["address", "city", "department"].some(
+          (key) =>
+            key in v &&
+            v[key as keyof Profile] !== d.profile[key as keyof Profile],
+        )
+          ? false
+          : d.account.addressConfirmed,
+      },
       declaration: { ...d.declaration, reviewed: false },
     }));
   }
@@ -126,7 +143,7 @@ export default function Application() {
     },
     {
       label: "Soportes",
-      value: `Servicio público: ${draft.documents.utility?.name || "Pendiente"}\n${a.utilityType} · ${a.utilityDate}\nDesprendible: ${draft.documents.payslip?.name || "Pendiente"}`,
+      value: `Desprendible: ${draft.documents.payslip?.name || "Pendiente"}`,
     },
   ];
   return (
@@ -200,54 +217,65 @@ export default function Application() {
             </Card>
             <SectionHeading number="02" title="Información personal" />
             <Card>
-              <Text style={s.label}>Tipo de documento</Text>
-              <Segments
-                items={["CC", "CE"]}
+              <SelectField
+                label="Tipo de documento *"
                 value={p.docType}
+                options={docTypes}
                 onChange={(docType) => profile({ docType })}
               />
-              <Text style={s.label}>Género *</Text>
-              <Segments
-                items={["Femenino", "Masculino", "Otro"]}
+              <SelectField
+                label="Género *"
                 value={p.gender}
+                options={genders}
                 onChange={(gender) => profile({ gender })}
               />
-              <Field
-                label="Fecha de nacimiento * (AAAA-MM-DD)"
-                placeholder="1965-05-20"
+              <DateField
+                label="Fecha de nacimiento *"
                 value={p.birthDate}
-                onChangeText={(birthDate) => profile({ birthDate })}
+                maxDate={new Date(
+                  new Date().setFullYear(new Date().getFullYear() - 18),
+                )
+                  .toISOString()
+                  .slice(0, 10)}
+                onChange={(birthDate) => profile({ birthDate })}
               />
               {Number.isFinite(age(p.birthDate)) && (
                 <Text style={s.small}>
                   Edad calculada: {age(p.birthDate)} años
                 </Text>
               )}
-              <Field
-                label="Fecha de expedición * (AAAA-MM-DD)"
+              <DateField
+                label="Fecha de expedición *"
                 value={p.expDate}
-                placeholder="1985-06-10"
-                onChangeText={(expDate) => profile({ expDate })}
+                minDate={p.birthDate || "1900-01-01"}
+                onChange={(expDate) => profile({ expDate })}
+              />
+              <SelectField
+                label="Estado civil *"
+                value={p.civil}
+                options={civilStatuses}
+                onChange={(civil) => profile({ civil })}
+              />
+              <SelectField
+                label="Ocupación *"
+                value={p.occupation}
+                options={occupations}
+                onChange={(occupation) => profile({ occupation })}
               />
             </Card>
             <SectionHeading number="03" title="Dónde estás hoy" />
             <Card>
-              {(
-                [
-                  ["address", "Dirección de residencia *"],
-                  ["city", "Ciudad *"],
-                  ["department", "Departamento *"],
-                  ["civil", "Estado civil *"],
-                  ["occupation", "Ocupación *"],
-                ] as [keyof Profile, string][]
-              ).map(([key, label]) => (
-                <Field
-                  key={key}
-                  label={label}
-                  value={p[key]}
-                  onChangeText={(v) => profile({ [key]: v })}
-                />
-              ))}
+              <ResidenceFields profile={p} onChange={profile} />
+              <Text style={s.small}>
+                Si cambias tu dirección, confirma el recibo en los documentos de
+                cuenta antes de finalizar.
+              </Text>
+              <LinkButton
+                title="Editar documentos de cuenta"
+                onPress={() =>
+                  router.push({ pathname: "/identity", params: { edit: "1" } })
+                }
+              />
             </Card>
           </>
         )}
@@ -409,47 +437,9 @@ export default function Application() {
           <>
             <ArtPanel
               kind="documents"
-              title="Tu solicitud toma forma"
-              caption={`${Number(!!draft.documents.utility) + Number(!!draft.documents.payslip)} de 2 seleccionados · sin enviar`}
+              title="Tu soporte de ingresos"
+              caption="El recibo y la acreditación se gestionan desde tu cuenta."
             />
-            <DocumentCard
-              title="Recibo de servicio público"
-              hint="Un recibo de energía, agua, gas u otro servicio, con tu dirección y fecha de los últimos 90 días."
-              value={draft.documents.utility}
-              onChange={(utility) =>
-                setDraft((d) => ({
-                  ...d,
-                  documents: { ...d.documents, utility },
-                  declaration: { ...d.declaration, reviewed: false },
-                }))
-              }
-            />
-            <Card>
-              <Text style={s.label}>Tipo de servicio</Text>
-              <Segments
-                items={["Energía", "Agua", "Gas", "Otro"]}
-                value={a.utilityType}
-                onChange={(utilityType) => update({ utilityType })}
-              />
-              <Field
-                label="Fecha de emisión del recibo * (AAAA-MM-DD)"
-                placeholder="AAAA-MM-DD"
-                value={a.utilityDate}
-                onChangeText={(utilityDate) => update({ utilityDate })}
-              />
-              <Text style={s.small}>
-                Se comprueba la fecha declarada; no se lee automáticamente el
-                contenido del recibo.
-              </Text>
-              <Choice
-                label="El recibo corresponde a mi dirección de residencia"
-                detail={`${p.address}, ${p.city}`}
-                selected={a.addressConfirmed}
-                onPress={() =>
-                  update({ addressConfirmed: !a.addressConfirmed })
-                }
-              />
-            </Card>
             <DocumentCard
               title="Desprendible de pago"
               hint="Tu último desprendible de mesada pensional o nómina. El contenido debe estar completo y ser legible."
@@ -481,12 +471,36 @@ export default function Application() {
               </Text>
               <Text style={[s.small, { color: "#CFDDCD" }]}>
                 {draft.loan.type} · {draft.loan.payer}
+                {"\n"}
+                {draft.loan.hasAdviser
+                  ? `Asesor: ${draft.loan.adviserCode}`
+                  : "Solicitud directa · sin asesor"}
               </Text>
               <Button
                 title="Editar simulación"
                 secondary
                 onPress={() =>
                   router.push({ pathname: "/simulator", params: { edit: "1" } })
+                }
+              />
+            </Card>
+            <Card>
+              <Text style={s.h2}>Documentos de cuenta</Text>
+              <Text style={s.text}>
+                {draft.account.customerType} · {draft.account.accreditationType}
+                {"\n"}Acreditación: {draft.documents.accreditation?.name}
+                {"\n"}Recibo: {draft.documents.utility?.name}
+                {"\n"}
+                {draft.account.utilityType} · {draft.account.utilityDate}
+                {"\n"}
+                {draft.account.ownsHome
+                  ? "Vivienda propia"
+                  : `Contrato: ${draft.documents.lease?.name || "Pendiente"}`}
+              </Text>
+              <LinkButton
+                title="Editar documentos de cuenta"
+                onPress={() =>
+                  router.push({ pathname: "/identity", params: { edit: "1" } })
                 }
               />
             </Card>
@@ -537,3 +551,4 @@ export default function Application() {
     </Screen>
   );
 }
+
