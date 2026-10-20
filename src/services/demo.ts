@@ -16,6 +16,7 @@ export const demoService: ApplicationService = {
       favorable: e.payment <= e.capacity,
       ...e,
       months: draft.loan.months,
+      adviserCode: draft.loan.hasAdviser ? draft.loan.adviserCode.trim() : "",
       healthReview: draft.declaration.health.some(Boolean),
     };
     results.set(key, result);

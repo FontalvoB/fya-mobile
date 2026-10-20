@@ -1,3 +1,4 @@
+import { isLocation, civilStatuses, occupations, genders, accreditationTypes, utilityTypes } from "./catalogues";
 export type LocalDocument = {
   name: string;
   uri: string;
@@ -25,6 +26,8 @@ export type Profile = {
 };
 export type Loan = {
   type: string;
+  adviserCode: string;
+  hasAdviser: boolean | null;
   product: string;
   payer: string;
   modality: string;
@@ -49,9 +52,6 @@ export type Declaration = {
   dataConsent: boolean;
   channels: string[];
   commercial: boolean | null;
-  utilityType: string;
-  utilityDate: string;
-  addressConfirmed: boolean;
   reviewed: boolean;
 };
 export type Result = {
@@ -63,10 +63,20 @@ export type Result = {
   months: number;
   capacity: number;
   healthReview: boolean;
+  adviserCode: string;
 };
-export type DocumentKey = "front" | "back" | "selfie" | "utility" | "payslip";
+export type AccountEvidence = {
+  customerType: "" | "Pensionado" | "Docente";
+  accreditationType: string;
+  ownsHome: boolean | null;
+  utilityType: string;
+  utilityDate: string;
+  addressConfirmed: boolean;
+};
+export type DocumentKey = "front" | "back" | "selfie" | "utility" | "payslip" | "accreditation" | "lease";
 export type Draft = {
   profile: Profile;
+  account: AccountEvidence;
   loan: Loan;
   declaration: Declaration;
   documents: Partial<Record<DocumentKey, LocalDocument>>;
@@ -82,6 +92,7 @@ export const policy = {
   maxMonths: 144,
   otpLifetime: 15 * 60 * 1000,
   otpAttempts: 3,
+  adviserCodeMaxLength: 64,
 };
 export const healthQuestions = [
   "¿Te han diagnosticado enfermedades del corazón o de la presión?",
@@ -135,13 +146,16 @@ export const demoProfile: Profile = {
   address: "Calle de ejemplo 12 # 34-56",
   city: "Bogotá",
   department: "Bogotá D.C.",
-  civil: "Casada",
-  occupation: "Pensionada",
+  civil: "Casado/a",
+  occupation: "Pensionado/a",
 };
 export const freshDraft = (): Draft => ({
   profile: { ...emptyProfile },
+  account: { customerType: "", accreditationType: "", ownsHome: null, utilityType: "Energía", utilityDate: "", addressConfirmed: false },
   loan: {
     type: "Pensionado",
+    adviserCode: "",
+    hasAdviser: null,
     product: "Libre inversión",
     payer: "FOPEP",
     modality: "Otro",
@@ -166,9 +180,6 @@ export const freshDraft = (): Draft => ({
     dataConsent: false,
     channels: [],
     commercial: null,
-    utilityType: "Energía",
-    utilityDate: "",
-    addressConfirmed: false,
     reviewed: false,
   },
   documents: {},
@@ -221,6 +232,10 @@ export function validateDocument(file: LocalDocument): string | undefined {
 }
 export function validateLoan(l: Loan): string | undefined {
   const e = estimate(l);
+  if (l.hasAdviser === null) return "Indica si realizas la solicitud con asesor o por tu cuenta.";
+  if (l.hasAdviser && !l.adviserCode.trim()) return "Ingresa el código del asesor para continuar con acompañamiento.";
+  if (l.adviserCode.length > policy.adviserCodeMaxLength) return "El código del asesor es demasiado largo.";
+  if (l.hasAdviser === false && l.adviserCode) return "Una solicitud directa no debe tener código de asesor.";
   if (
     !Object.values(l)
       .filter((v) => typeof v === "number")
@@ -263,6 +278,8 @@ export function validateStep(d: Draft, step: number): string | undefined {
       !/^\d{6,12}$/.test(p.docNumber)
     )
       return "Revisa correo, celular de 10 dígitos y documento de 6 a 12 dígitos.";
+    if (!isLocation(p.department, p.city)) return "Selecciona un departamento y una ciudad que correspondan entre sí.";
+    if (!civilStatuses.includes(p.civil) || !occupations.includes(p.occupation) || !genders.includes(p.gender)) return "Selecciona género, estado civil y ocupación de las opciones disponibles.";
     if (
       !Number.isFinite(dateValue(p.birthDate)) ||
       !Number.isFinite(dateValue(p.expDate)) ||
@@ -294,29 +311,46 @@ export function validateStep(d: Draft, step: number): string | undefined {
       return "Elige al menos un canal, decide sobre publicidad y acepta las autorizaciones requeridas.";
   }
   if (step === 4) {
-    if (!d.documents.utility || !d.documents.payslip)
-      return "Adjunta el recibo de servicio público y el desprendible de pago obligatorios.";
-    const error =
-      validateDocument(d.documents.utility) ||
-      validateDocument(d.documents.payslip);
-    if (error) return error;
-    const today = new Date();
-    const issued = dateValue(a.utilityDate),
-      days =
-        (Date.UTC(today.getFullYear(), today.getMonth(), today.getDate(), 12) -
-          issued) /
-        86400000;
-    if (!Number.isFinite(issued) || days < 0 || days > policy.maxAgeDays)
-      return "El recibo debe tener una fecha válida de los últimos 90 días, sin fechas futuras.";
-    if (!a.addressConfirmed)
-      return "Confirma que el recibo corresponde a tu dirección.";
+    if (!d.documents.payslip) return "Adjunta el desprendible de pago obligatorio.";
+    return validateDocument(d.documents.payslip);
   }
   if (step === 5 && !a.reviewed)
     return "Confirma que revisaste la información de tu solicitud.";
 }
 export function validateAll(d: Draft) {
   return (
+    validateAccount(d) ||
+    (d.loan.type !== d.account.customerType ? "El perfil de la simulación debe coincidir con la acreditación de la cuenta." : undefined) ||
     validateLoan(d.loan) ||
     steps.map((_, i) => validateStep(d, i)).find(Boolean)
   );
+}
+
+export function validateAccount(d: Draft): string | undefined {
+  const a = d.account;
+  if (!d.documents.front || !d.documents.back) return "Selecciona las dos caras de tu documento.";
+  if (!["Pensionado", "Docente"].includes(a.customerType)) return "Selecciona si eres pensionado o docente.";
+  if (!accreditationTypes.includes(a.accreditationType)) return "Selecciona el tipo de documento de acreditación.";
+  if (!d.documents.accreditation) return "Adjunta el documento que acredita que eres pensionado o docente en Colombia.";
+  if (!d.profile.address.trim() || !isLocation(d.profile.department, d.profile.city)) return "Completa la dirección y selecciona departamento y ciudad de residencia.";
+  if (a.ownsHome === null) return "Indica si la vivienda de residencia es de tu propiedad.";
+  if (!d.documents.utility) return "Adjunta el recibo de servicio público para crear tu cuenta.";
+  if (a.ownsHome === false && !d.documents.lease) return "Adjunta el contrato de arrendamiento porque la vivienda no es de tu propiedad.";
+  for (const key of ["front", "back", "accreditation", "utility", ...(a.ownsHome === false ? ["lease"] : [])] as DocumentKey[]) {
+    const issue = validateDocument(d.documents[key]!);
+    if (issue) return issue;
+  }
+  if (!utilityTypes.includes(a.utilityType)) return "Selecciona un tipo de servicio público.";
+  const today = new Date();
+  const issued = dateValue(a.utilityDate);
+  const days = (Date.UTC(today.getFullYear(), today.getMonth(), today.getDate(), 12) - issued) / 86400000;
+  if (!Number.isFinite(issued) || days < 0 || days > policy.maxAgeDays) return "El recibo debe tener una fecha válida de los últimos 90 días, sin fechas futuras.";
+  if (!a.addressConfirmed) return "Confirma que el recibo corresponde a tu dirección.";
+}
+export function demoDraft(): Draft {
+  const d = freshDraft();
+  d.profile = { ...demoProfile };
+  d.account = { customerType: "Pensionado", accreditationType: "Resolución", ownsHome: true, utilityType: "Energía", utilityDate: new Date().toISOString().slice(0, 10), addressConfirmed: true };
+  for (const key of ["front", "back", "utility", "accreditation"] as DocumentKey[]) d.documents[key] = { name: `${key}-ficticio-demo.pdf`, uri: "demo://fixture", size: 128, mimeType: "application/pdf", demo: true };
+  return d;
 }

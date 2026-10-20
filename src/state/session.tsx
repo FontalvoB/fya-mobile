@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import { Draft, Result, freshDraft, demoProfile } from "../domain/model";
+import { Draft, Result, freshDraft, demoDraft } from "../domain/model";
 type Session = {
   draft: Draft;
   setDraft: React.Dispatch<React.SetStateAction<Draft>>;
@@ -21,7 +21,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     setResult(null);
   }
   function demo() {
-    setDraft({ ...freshDraft(), profile: { ...demoProfile } });
+    setDraft(demoDraft());
     setIdentity(true);
     setResult(null);
   }
