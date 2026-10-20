@@ -60,3 +60,18 @@ El resultado de estas compilaciones se actualiza al comprobar sus artefactos. Lo
 iOS 1.1.0 final: FINISHED. Archivo descargado de 23.619.879 bytes; las 276 entradas del tar se leyeron correctamente. Info.plist confirma versión 1.1.0, identificador com.fyasocialcapital.mobile y plataforma iphonesimulator. El build corresponde a 778b4ba6b3e978b207f287e7b0d7187578c36d41. No se ha ejecutado en Xcode ni en iPhone.
 
 Android 1.1.0 final: FINISHED. Archivo descargado de 94.612.212 bytes; CRC de 1.272 entradas verificado, con AndroidManifest.xml, classes.dex y bibliotecas arm64-v8a, armeabi-v7a, x86 y x86_64. EAS confirma appVersion 1.1.0 y commit 778b4ba6b3e978b207f287e7b0d7187578c36d41. No se ha ejecutado en dispositivo ni se ha verificado independientemente la firma. Ambas compilaciones finales están terminadas y descargadas.
+
+## Ajustes del 20 de octubre de 2026 · solo código
+
+Se integraron los commits del usuario `273061b` y `9369eed`, incluyendo el logo y las opciones de catálogos. Se amplió la cobertura de ciudades conservando esas opciones. No se generaron instaladores, exportaciones de distribución ni ZIP durante esta revisión.
+
+- TypeScript: aprobado.
+- ESLint: aprobado sin advertencias.
+- 20 pruebas de dominio/ayuda aprobadas: acreditación, vivienda no propia y contrato válido, recibo en cuenta y desprendible en solicitud, fechas, ubicación, asesor opcional, código asociado al resultado y respuestas del asistente, además de las validaciones anteriores.
+- 6 recorridos Playwright aprobados sobre localhost:8085: calendario con búsqueda de año y edición persistente; listas dependientes y búsqueda sin tildes; solicitud con asesor y directa, volviendo atrás; chatbot con texto/sugerencias/tema desconocido a 320 px; flujo completo con documentos, edición y ambos resultados; registro de docente con acreditación, recibo y arrendamiento; revisión responsive y pantallas secundarias.
+- Comprobación visual de calendario y selectores a 320 px, logo corporativo y conversación. Las capturas de trabajo permanecen en work/ y no se distribuyen como un paquete.
+- En QA se corrigieron la superposición al cerrar/abrir calendarios, un texto vacío fuera de Text en el chat, etiquetas accesibles de sugerencias y el tratamiento de toque/teclado en listas. Dos intentos iniciales no pudieron conectar antes de terminar el arranque del servidor; la ronda final pasó completa.
+
+Los calendarios y selectores usan componentes React Native compartidos, sin añadir dependencias nativas. El chatbot responde desde una base local, no un modelo generativo ni un operador humano conectado. No consulta Internet, valida asesores ni envía documentos. El formato definitivo del código del asesor queda pendiente; solo se limita técnicamente a 64 caracteres y se exige cuando el usuario indica acompañamiento.
+
+Siguen pendientes las pruebas físicas de teclado, cámara, permisos y selectores en Android/iOS. Las comprobaciones del navegador no equivalen a ejecutarlas en dispositivos. Los instaladores 1.1.0 anteriores no contienen estos cambios.

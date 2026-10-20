@@ -28,3 +28,11 @@ Los instaladores se construyen en Expo EAS; no contienen un backend. La firma An
 - `913ac41`: capturas finales, contraste y referencias a builds definitivos.
 - `f53e431`: paquete iOS 1.1.0 comprobado.
 - Entrega final: APK Android 1.1.0 y simulador iOS 1.1.0 terminados en EAS, descargados y verificados por integridad. Las modificaciones de documentación posteriores no alteran el código compilado 778b4ba.
+
+## Ajustes del 20 de octubre de 2026
+
+- Se preservó e integró el trabajo del usuario sobre logo y catálogos (`273061b`, `9369eed`).
+- `1dfa7b8`: modelos de documentos de cuenta y controles compartidos.
+- `06472c8`: integración del remoto y ampliación de catálogos.
+- `88c73ff`: formularios simplificados, registro ampliado, asesor opcional y chat local, con pruebas.
+- Desde esta revisión, solo código y comprobaciones; no se generan nuevos instaladores ni paquetes por instrucción expresa del usuario.

@@ -2,6 +2,18 @@
 
 Aplicación nativa de autoservicio para pensionados y docentes. Frontend de demostración para Android e iOS, con Expo SDK 58, React Native, TypeScript, Expo Router, Reanimated y selección nativa de documentos. No usa un backend ni representa aprobaciones reales.
 
+## Cambios del 20 de octubre de 2026
+
+Por instrucción del usuario, desde esta fecha se trabaja únicamente en código, documentación y pruebas. No generar APK, paquetes iOS, ZIP de entrega ni ejecutar nuevas compilaciones EAS salvo una nueva solicitud explícita. Los instaladores y capturas históricos que aparecen más abajo no incluyen estos cambios.
+
+- Selectores con búsqueda para departamento/ciudad, estado civil, ocupación, género, documento, acreditación y servicio. Calendario para las fechas, con búsqueda de año y selección de mes/día.
+- Logo corporativo real `assets/logoFyA.png`, integrado desde el commit del usuario.
+- Creación de cuenta: identidad, perfil pensionado/docente, acreditación, residencia y recibo; contrato obligatorio si la vivienda no es propia. Documentos editables desde Perfil y desde la solicitud.
+- Simulación: solicitud directa o con asesor. Solo el acompañamiento exige código; se conserva en el resultado de prueba. No se verifica el asesor ni se liquidan comisiones.
+- Chatbot local de atención, accesible desde la cabecera y Ayuda. Responde a preguntas frecuentes, acepta texto y sugerencias, reconoce temas desconocidos y no se presenta como un agente humano. Su contrato `SupportService` permite conectar otro adaptador en una fase posterior.
+
+Catálogo geográfico y procedencia: `src/data/README.md`. Comprobaciones actuales: `docs/QA.md`.
+
 ## Rediseño 1.1.0
 
 Dirección fintech contemporánea elegida por el usuario. Nueva tipografía Manrope, fotografía e ilustraciones 3D originales, inicio con accesos rápidos, cifras protagonistas y formularios agrupados. Detalle por sección: [docs/REDISENO.md](docs/REDISENO.md). Prompts de los nuevos recursos: [docs/RECURSOS-V2.md](docs/RECURSOS-V2.md).
@@ -75,7 +87,7 @@ En macOS, una app de simulador descargada y extraída se instala con `xcrun simc
 
 ## Alcance
 
-Solo cliente. Registro y OTP simulados, documentos locales, simulación de libranza, datos personales, FATCA/CRS, salud, autorizaciones, soportes obligatorios, resumen editable y seguimiento de prueba. El recibo de servicio público se solicita en Soportes, conforme a la decisión del usuario del 16 de octubre de 2026.
+Solo cliente. Registro y OTP simulados, documentos locales, simulación de libranza, datos personales, FATCA/CRS, salud, autorizaciones, soportes obligatorios, resumen editable y seguimiento de prueba. El recibo de servicio público se solicita al crear la cuenta, según el ajuste del usuario del 20 de octubre de 2026. En Soportes de la solicitud se pide el desprendible.
 
 No hay firma electrónica, consulta de riesgo, aprobación humana, envío de archivos ni desembolso reales. Los textos y parámetros de prueba requieren confirmación antes de producción.
 
@@ -83,17 +95,17 @@ No hay firma electrónica, consulta de riesgo, aprobación humana, envío de arc
 
 1. Empezar un registro o elegir explícitamente el perfil ficticio desde la bienvenida. El registro ofrece rellenado de ejemplo; valida datos, contraseña y consentimiento.
 2. Códigos simulados: correo `482913`, celular `735160`, confirmación `219604`. Se muestran en pantalla, tienen control de intentos, caducidad y espera de reenvío. No son mecanismos de autenticación seguros ni mensajes reales.
-3. Seleccionar cédula frente/reverso. Selfie opcional con permiso y autorización. Simular revisión favorable de identidad.
-4. Simular por monto o cuota, tipo pensionado/docente, ingresos y deducciones. Los parámetros del HTML son de prueba: 1,6% mensual, $1–120 millones, 12–144 meses. Se informa capacidad, sin seguros ni cargos no definidos.
+3. Seleccionar identidad frente/reverso, perfil pensionado/docente y acreditación. Completar dirección con selectores, indicar si la vivienda es propia y adjuntar recibo; si no es propia, adjuntar contrato de arrendamiento. Fecha del recibo mediante calendario. Selfie opcional. Simular revisión favorable.
+4. Simular por monto o cuota con el perfil acreditado, ingresos y deducciones. Responder si hay asesor; si lo hay, introducir su código. Los parámetros del HTML son de prueba: 1,6% mensual, $1–120 millones, 12–144 meses. Se informa capacidad, sin seguros ni cargos no definidos.
 5. Completar datos, FATCA/CRS, nueve respuestas de salud y detalles afirmativos; decidir canales/publicidad y aceptar autorizaciones separadas.
-6. Adjuntar recibo de servicio público y desprendible. PDF/JPG/PNG, hasta 5 MB; fecha declarada del recibo hasta 90 días. Reemplazar/eliminar y validar antes de avanzar. No hay OCR ni validación de autenticidad.
+6. Adjuntar el desprendible de pago. El recibo ya pertenece a la cuenta. Todos los documentos admiten PDF/JPG/PNG de hasta 5 MB; el recibo debe ser de los últimos 90 días. Reemplazar/eliminar y validar antes de avanzar. No hay OCR ni verificación de autenticidad.
 7. Revisar y editar por bloques, confirmar con código y ver resultado/seguimiento de prueba. Una simulación no viable muestra que no comenzó revisión documental.
 
 Los documentos no se envían. Las referencias se conservan en memoria; Expo Document Picker puede copiar archivos a la caché temporal del dispositivo. Cerrar/recargar elimina el borrador en memoria, no los originales del usuario. No se persisten contraseñas ni declaraciones de salud. Esto es deliberado para una demo que maneja datos sensibles.
 
 ## Diseño y arquitectura
 
-Fondo gris verdoso, verde profundo y lima; Manrope Regular/Medium/Bold/ExtraBold para lectura, títulos y cifras. Fotografía original e icono generados por IA, guardados en `assets/` y referenciados realmente por las pantallas y configuración nativa. Las fotografías representan personas ficticias, no testimonios. Los cuatro recursos del rediseño suman unos 420 KB. Prompts y procedencia: `docs/RECURSOS-V2.md`; recursos de la primera versión: `docs/RECURSOS.txt`.
+Fondo gris verdoso, verde profundo y lima; Manrope Regular/Medium/Bold/ExtraBold para lectura, títulos y cifras. Logo corporativo proporcionado por el usuario en la interfaz; fotografías e ilustraciones originales generadas por IA, guardados en `assets/` y referenciados realmente por las pantallas y configuración nativa. Las fotografías representan personas ficticias, no testimonios. Los cuatro recursos del rediseño suman unos 420 KB. Prompts y procedencia: `docs/RECURSOS-V2.md`; recursos de la primera versión: `docs/RECURSOS.txt`.
 
 Expo Router organiza la navegación sobre React Navigation. Reanimated anima entradas y cambios de contenido; se respeta reducir movimiento, incluyendo los modales. Safe areas, desplazamiento de formularios y KeyboardAvoidingView en iOS; Android usa resize. Controles con roles/etiquetas accesibles y superficies táctiles de 44–58 puntos.
 
