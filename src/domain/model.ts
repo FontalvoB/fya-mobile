@@ -1,4 +1,4 @@
-import { isLocation, civilStatuses, occupations, genders, accreditationTypes, utilityTypes } from "./catalogues";
+import { isLocation, civilStatuses, occupations, genders, accreditationTypes, utilityTypes } from "./catalogs";
 export type LocalDocument = {
   name: string;
   uri: string;
@@ -146,8 +146,8 @@ export const demoProfile: Profile = {
   address: "Calle de ejemplo 12 # 34-56",
   city: "Bogotá",
   department: "Bogotá D.C.",
-  civil: "Casado/a",
-  occupation: "Pensionado/a",
+  civil: "Casado(a)",
+  occupation: "Pensionado",
 };
 export const freshDraft = (): Draft => ({
   profile: { ...emptyProfile },

@@ -3,7 +3,7 @@ import { View, Text, Pressable, Modal, FlatList, StyleSheet, TextInput } from 'r
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useReducedMotion } from 'react-native-reanimated';
 import { Icon, colors, fonts, s } from './ui';
-import { normalizeSearch } from '../domain/catalogues';
+import { normalizeSearch } from '../domain/catalogs';
 
 function Sheet({ title, visible, onClose, children }: { title: string; visible: boolean; onClose: () => void; children: React.ReactNode }) {
   const reduced = useReducedMotion();
