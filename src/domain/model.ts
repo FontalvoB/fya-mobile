@@ -135,8 +135,8 @@ export const demoProfile: Profile = {
   address: "Calle de ejemplo 12 # 34-56",
   city: "Bogotá",
   department: "Bogotá D.C.",
-  civil: "Casada",
-  occupation: "Pensionada",
+  civil: "Casado(a)",
+  occupation: "Pensionado",
 };
 export const freshDraft = (): Draft => ({
   profile: { ...emptyProfile },
