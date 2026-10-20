@@ -24,3 +24,7 @@ Los instaladores se construyen en Expo EAS; no contienen un backend. La firma An
 
 - `449520e`: evidencia visual del rediseño y prompts de los recursos.
 - `778b4ba`: contraste del texto secundario y composición compacta del inicio.
+
+- `913ac41`: capturas finales, contraste y referencias a builds definitivos.
+- `f53e431`: paquete iOS 1.1.0 comprobado.
+- Entrega final: APK Android 1.1.0 y simulador iOS 1.1.0 terminados en EAS, descargados y verificados por integridad. Las modificaciones de documentación posteriores no alteran el código compilado 778b4ba.
