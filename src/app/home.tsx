@@ -6,7 +6,7 @@ import {
   Pressable,
   useWindowDimensions,
 } from "react-native";
-import { router, Redirect, Href } from "expo-router";
+import { router, Redirect } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSession } from "../state/session";
 import {
@@ -19,65 +19,14 @@ import {
   s,
   colors,
 } from "../components/ui";
-import { artwork, ActionTile, PhotoBanner } from "../components/visuals";
+import { ActionTile, PhotoBanner } from "../components/visuals";
 export default function Home() {
   const { draft, identity, result } = useSession();
   const { width } = useWindowDimensions();
   const compact = width < 360;
   if (!identity) return <Redirect href="/" />;
-  const tabs: {
-    icon: React.ComponentProps<typeof Icon>["name"];
-    label: string;
-    path: Href;
-  }[] = [
-    { icon: "home", label: "Inicio", path: "/home" },
-    { icon: "file-text", label: "Solicitudes", path: "/tracking" },
-    { icon: "credit-card", label: "Créditos", path: "/credits" },
-    { icon: "user", label: "Perfil", path: "/profile" },
-  ];
   return (
-    <Screen
-      back={false}
-      footer={
-        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-          {tabs.map(({ icon, label, path }, i) => (
-            <Pressable
-              key={label}
-              accessibilityRole="button"
-              accessibilityLabel={label}
-              accessibilityState={{ selected: i === 0 }}
-              onPress={() => router.push(path)}
-              style={{
-                flex: 1,
-                minHeight: 60,
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 5,
-              }}
-            >
-              <View
-                style={{
-                  backgroundColor: i === 0 ? colors.lime : "transparent",
-                  paddingHorizontal: 17,
-                  paddingVertical: 5,
-                  borderRadius: 18,
-                }}
-              >
-                <Icon name={icon} color={i === 0 ? colors.ink : colors.muted} />
-              </View>
-              <Text
-                style={[
-                  s.small,
-                  { fontSize: 11, color: i === 0 ? colors.ink : colors.muted },
-                ]}
-              >
-                {label}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-      }
-    >
+    <Screen back={false}>
       <Reveal>
         <View style={s.between}>
           <View style={{ flex: 1, gap: 5 }}>
@@ -93,7 +42,7 @@ export default function Home() {
               width: 48,
               height: 48,
               borderRadius: 18,
-              backgroundColor: colors.white,
+              backgroundColor: "#FFFFFF26",
               alignItems: "center",
               justifyContent: "center",
               borderWidth: 1,
@@ -104,13 +53,13 @@ export default function Home() {
           </Pressable>
         </View>
         <LinearGradient
-          colors={["#075C4B", "#052F2B"]}
+          colors={["#075459", "#002E30"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{ borderRadius: 28, padding: 22, gap: 18, overflow: "hidden" }}
         >
           <View style={s.between}>
-            <Text style={[s.kicker, { color: colors.lime }]}>
+            <Text style={[s.kicker, { color: "#D3E8DE" }]}>
               LIBRANZA · LIBRE INVERSIÓN
             </Text>
             <Icon name="arrow-up-right" color={colors.lime} />
@@ -134,18 +83,20 @@ export default function Home() {
               </Text>
             </View>
             <Image
-              source={artwork.plans}
+              source={require("../../assets/Espiral_moneda.png")}
               accessible={false}
               style={{
                 width: compact ? 88 : 112,
-                height: 142,
-                borderRadius: 22,
+                height: 180,
+                borderRadius: 60,
+                opacity: 0.8,
+                transform: [{ rotate: "180deg" }],
               }}
             />
           </View>
           <Button
             title="Simular mi crédito"
-            secondary
+            onDark
             onPress={() => router.push("/simulator")}
           />
         </LinearGradient>

@@ -120,7 +120,8 @@ export default function Chat() {
           )}
           <View
             style={{
-              backgroundColor: message.role === "user" ? colors.green : "white",
+              backgroundColor:
+                message.role === "user" ? colors.green : "#FFFFFF26",
               borderRadius: 22,
               borderBottomRightRadius: message.role === "user" ? 6 : 22,
               borderBottomLeftRadius: message.role === "assistant" ? 6 : 22,

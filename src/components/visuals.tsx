@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  Image,
-  ImageBackground,
-  Pressable,
-  StyleSheet,
-} from "react-native";
+import { View, Text, Image, Pressable, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { colors, s, Icon } from "./ui";
 
@@ -36,9 +29,15 @@ export function ArtPanel({
         <Text style={s.small}>{caption}</Text>
       </View>
       <Image
-        source={artwork[kind]}
+        source={require("../../assets/Espiral_moneda.png")}
         accessible={false}
-        style={{ width: "38%", height: 144, alignSelf: "center" }}
+        style={{
+          width: "32%",
+          height: 164,
+          alignSelf: "center",
+          opacity: 0.65,
+          transform: [{ rotate: "180deg" }],
+        }}
         resizeMode="cover"
       />
     </View>
@@ -53,23 +52,43 @@ export function PhotoBanner({
   caption: string;
 }) {
   return (
-    <ImageBackground
-      source={artwork.learning}
+    <LinearGradient
+      colors={["#17585A", "#003638"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
       style={v.photo}
-      imageStyle={{ width: "100%", height: "100%", resizeMode: "cover" }}
-      accessible={false}
     >
-      <LinearGradient
-        colors={["#052F2B00", "#052F2BEF"]}
-        style={[
-          StyleSheet.absoluteFill,
-          { justifyContent: "flex-end", padding: 20, gap: 5 },
-        ]}
-      >
+      <Image
+        source={require("../../assets/Espiral_moneda.png")}
+        accessible={false}
+        resizeMode="cover"
+        style={{
+          position: "absolute",
+          width: 145,
+          height: 320,
+          right: -10,
+          top: -40,
+          opacity: 0.32,
+          transform: [{ rotate: "180deg" }],
+        }}
+      />
+      <View style={{ padding: 24, gap: 10, maxWidth: "80%" }}>
+        <View
+          style={{
+            alignSelf: "flex-start",
+            borderRadius: 24,
+            padding: 10,
+            backgroundColor: "#FFFFFF16",
+            borderWidth: 1,
+            borderColor: "#FFFFFF38",
+          }}
+        >
+          <Icon name="trending-up" color="#D8EDE2" />
+        </View>
         <Text style={[s.h2, s.white]}>{title}</Text>
-        <Text style={[s.small, { color: "#E1F1E8" }]}>{caption}</Text>
-      </LinearGradient>
-    </ImageBackground>
+        <Text style={[s.small, { color: "#D8EDE2" }]}>{caption}</Text>
+      </View>
+    </LinearGradient>
   );
 }
 
@@ -116,7 +135,7 @@ export function ActionTile({
       style={({ pressed }) => [
         v.tile,
         {
-          backgroundColor: accent ? colors.lime : colors.white,
+          backgroundColor: accent ? "#FFFFFF38" : "#FFFFFF18",
           transform: [{ scale: pressed ? 0.97 : 1 }],
         },
       ]}
@@ -136,15 +155,15 @@ export function ActionTile({
 const v = StyleSheet.create({
   artPanel: {
     flexDirection: "row",
-    backgroundColor: "#EAF4EE",
+    backgroundColor: "#FFFFFF18",
     borderRadius: 24,
     overflow: "hidden",
     minHeight: 144,
     borderWidth: 1,
-    borderColor: "#DCECE2",
+    borderColor: "#FFFFFF66",
   },
   photo: {
-    height: 210,
+    minHeight: 210,
     borderRadius: 24,
     overflow: "hidden",
     backgroundColor: colors.pale,
@@ -152,14 +171,16 @@ const v = StyleSheet.create({
   sectionNumber: {
     width: 38,
     height: 38,
-    borderRadius: 12,
-    backgroundColor: colors.pale,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: "#FFFFFF24",
     alignItems: "center",
     justifyContent: "center",
   },
   tile: {
     flex: 1,
-    borderRadius: 22,
+    borderRadius: 28,
     padding: 18,
     gap: 25,
     minHeight: 142,

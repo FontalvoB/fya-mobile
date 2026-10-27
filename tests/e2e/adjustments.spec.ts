@@ -27,7 +27,7 @@ test("calendar and dependent searchable choices preserve edits", async ({
   page,
 }) => {
   await demo(page);
-  await page.getByRole("button", { name: "Perfil", exact: true }).click();
+  await page.getByRole("button", { name: "Ajustes", exact: true }).click();
   await page
     .getByRole("button", { name: "Editar datos de mi solicitud", exact: true })
     .click();
@@ -111,6 +111,7 @@ test("chat answers free text, followups, unknown topics and works at 320px", asy
   await expect(
     page.getByRole("img", { name: "FYA Social Capital" }),
   ).toBeVisible();
+  await page.getByRole("button", { name: "Más", exact: true }).click();
   await page.getByRole("button", { name: "Abrir asistente de ayuda" }).click();
   const field = page.getByRole("textbox", { name: "Escribe tu pregunta" });
   await field.fill("¿Dónde adjunto el recibo?");

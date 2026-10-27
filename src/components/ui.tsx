@@ -11,9 +11,14 @@ import {
   ActivityIndicator,
   TextInputProps,
   Modal,
-  Image,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
+import { BrandLogo, BottomNavigation, brandHeaderTop } from "./brand";
+import { BrandSurface, GlassLayer } from "./glass";
 import Feather from "@expo/vector-icons/Feather";
 import Animated, {
   FadeInDown,
@@ -23,16 +28,16 @@ import Animated, {
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 export const colors = {
-  bg: "#F4F7F5",
-  ink: "#102E2B",
-  green: "#075C4B",
-  deep: "#073C35",
-  muted: "#52665D",
-  line: "#E0E9E4",
-  lime: "#D5F568",
+  bg: "#C1CDCA",
+  ink: "#082F2E",
+  green: "#00474A",
+  deep: "#003638",
+  muted: "#405B53",
+  line: "#FFFFFF66",
+  lime: "#D3E8DE",
   white: "#FFFFFF",
   error: "#A4352E",
-  pale: "#E8F1EB",
+  pale: "#FFFFFF26",
 };
 export const fonts = {
   regular: "Manrope",
@@ -43,12 +48,12 @@ export const fonts = {
 export const s = StyleSheet.create({
   page: { flex: 1, backgroundColor: colors.bg },
   body: {
-    padding: 20,
+    padding: 24,
     paddingTop: 12,
     gap: 22,
     paddingBottom: 32,
     width: "100%",
-    maxWidth: 620,
+    maxWidth: 540,
     alignSelf: "center",
   },
   row: { flexDirection: "row", alignItems: "center", gap: 12 },
@@ -59,10 +64,11 @@ export const s = StyleSheet.create({
     gap: 12,
   },
   card: {
-    backgroundColor: colors.white,
-    borderRadius: 24,
+    backgroundColor: "#FFFFFF0D",
+    overflow: "hidden",
+    borderRadius: 30,
     padding: 20,
-    boxShadow: "0px 4px 18px rgba(15, 53, 42, 0.035)",
+    boxShadow: "0px 8px 30px rgba(15, 53, 42, 0.045)",
     borderWidth: 1,
     borderColor: colors.line,
     gap: 14,
@@ -75,9 +81,9 @@ export const s = StyleSheet.create({
     textTransform: "uppercase",
   },
   title: {
-    fontFamily: fonts.display,
-    fontSize: 34,
-    lineHeight: 40,
+    fontFamily: fonts.bold,
+    fontSize: 31,
+    lineHeight: 38,
     letterSpacing: -1.3,
     color: colors.ink,
   },
@@ -107,10 +113,10 @@ export const s = StyleSheet.create({
   },
   input: {
     minHeight: 56,
-    backgroundColor: "#FFF",
+    backgroundColor: "#FFFFFF1F",
     borderWidth: 1,
     borderColor: colors.line,
-    borderRadius: 14,
+    borderRadius: 18,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontFamily: fonts.medium,
@@ -129,10 +135,10 @@ export const s = StyleSheet.create({
     paddingBottom: 12,
     borderTopWidth: 1,
     borderColor: colors.line,
-    backgroundColor: colors.white,
+    backgroundColor: "#D3DDD254",
     gap: 8,
     width: "100%",
-    maxWidth: 620,
+    maxWidth: 540,
     alignSelf: "center",
   },
   link: { fontFamily: fonts.bold, fontSize: 14, color: colors.green },
@@ -172,6 +178,7 @@ export function Button({
   disabled = false,
   busy = false,
   icon = "arrow-up-right",
+  onDark = false,
 }: {
   title: string;
   onPress: () => void;
@@ -179,6 +186,7 @@ export function Button({
   disabled?: boolean;
   busy?: boolean;
   icon?: React.ComponentProps<typeof Feather>["name"];
+  onDark?: boolean;
 }) {
   return (
     <Pressable
@@ -193,23 +201,31 @@ export function Button({
       }}
       style={({ pressed }) => ({
         minHeight: 58,
-        borderRadius: 18,
+        borderRadius: 32,
         paddingHorizontal: 22,
-        backgroundColor: secondary ? colors.pale : colors.green,
+        backgroundColor: onDark
+          ? "#DCEEE5"
+          : secondary
+            ? "#FFFFFF38"
+            : colors.green,
+        borderWidth: 1,
+        borderColor: secondary ? "#FFFFFF75" : "#FFFFFF12",
         boxShadow: secondary ? undefined : "0px 5px 14px rgba(7, 92, 75, 0.16)",
         opacity: disabled ? 0.45 : pressed ? 0.82 : 1,
         transform: [{ scale: pressed ? 0.985 : 1 }],
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between",
+        justifyContent: "center",
         gap: 12,
       })}
     >
       <Text
         style={{
           fontFamily: fonts.bold,
-          fontSize: 15,
-          color: secondary ? colors.ink : colors.white,
+          fontSize: 14,
+          letterSpacing: 0.5,
+          textAlign: "center",
+          color: secondary || onDark ? colors.ink : colors.white,
           flexShrink: 1,
         }}
       >
@@ -218,7 +234,11 @@ export function Button({
       {busy ? (
         <ActivityIndicator color={secondary ? colors.green : colors.white} />
       ) : (
-        <Icon name={icon} color={secondary ? colors.green : colors.lime} />
+        <Icon
+          name={icon}
+          size={18}
+          color={secondary || onDark ? colors.green : "#D3E8DE"}
+        />
       )}
     </Pressable>
   );
@@ -258,7 +278,9 @@ export function Notice({
     <View
       accessibilityLiveRegion="polite"
       style={{
-        backgroundColor: error ? "#FBEDE8" : colors.pale,
+        backgroundColor: error ? "#FFE5DCB8" : "#FFFFFF18",
+        borderWidth: 1,
+        borderColor: error ? "#C78E7966" : colors.line,
         padding: 15,
         borderRadius: 16,
         flexDirection: "row",
@@ -283,7 +305,21 @@ export function Card({
   children: React.ReactNode;
   dark?: boolean;
 }) {
-  return <View style={[s.card, dark && s.dark]}>{children}</View>;
+  return (
+    <View style={[s.card, dark && s.dark]}>
+      {dark ? (
+        <LinearGradient
+          colors={["#075459", "#002E30"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={StyleSheet.absoluteFill}
+        />
+      ) : (
+        <GlassLayer />
+      )}
+      {children}
+    </View>
+  );
 }
 export function Field({
   label,
@@ -296,7 +332,7 @@ export function Field({
       <Text style={s.label}>{label}</Text>
       <TextInput
         accessibilityLabel={label}
-        placeholderTextColor="#89948C"
+        placeholderTextColor="#647B70"
         {...props}
         onFocus={(e) => {
           setFocus(true);
@@ -342,7 +378,7 @@ export function Choice({
       style={({ pressed }) => ({
         borderWidth: 1.5,
         borderColor: selected ? colors.green : colors.line,
-        backgroundColor: selected ? "#ECF7DF" : "#FFF",
+        backgroundColor: selected ? "#00474A14" : "#FFFFFF18",
         borderRadius: 17,
         padding: 16,
         minHeight: 56,
@@ -395,8 +431,8 @@ export function Segments({
             minHeight: 48,
             paddingHorizontal: 16,
             paddingVertical: 13,
-            borderRadius: 13,
-            backgroundColor: item === value ? colors.green : colors.white,
+            borderRadius: 28,
+            backgroundColor: item === value ? colors.green : "#FFFFFF20",
             borderWidth: 1,
             borderColor: item === value ? colors.green : colors.line,
           }}
@@ -467,141 +503,152 @@ export function Screen({
   autoScroll?: boolean;
 }) {
   const scrollRef = useRef<React.ComponentRef<typeof ScrollView>>(null);
+  const insets = useSafeAreaInsets();
   return (
-    <SafeAreaView style={s.page}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
-        <View
-          style={{
-            width: "100%",
-            maxWidth: 620,
-            alignSelf: "center",
-            paddingHorizontal: 24,
-            paddingTop: 12,
-            paddingBottom: 16,
-            gap: 16,
-          }}
+    <View style={{ flex: 1, backgroundColor: "#D8DEDB", alignItems: "center" }}>
+      <BrandSurface>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
-          <View style={s.between}>
-            {back ? (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Volver"
-                onPress={
-                  onBack ||
-                  (() =>
-                    router.canGoBack()
-                      ? router.back()
-                      : router.replace("/home"))
-                }
-                style={{
-                  height: 44,
-                  width: 44,
-                  borderRadius: 22,
-                  backgroundColor: "white",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderWidth: 1,
-                  borderColor: colors.line,
-                }}
-              >
-                <Icon name="arrow-left" />
-              </Pressable>
-            ) : (
-              <View style={{ width: 118, height: 48, overflow: "hidden" }}>
-                <Image
-                  source={require("../../assets/logoFyA.png")}
-                  accessibilityLabel="FYA Social Capital"
-                  resizeMode="contain"
+          <View
+            style={{
+              paddingHorizontal: 26,
+              paddingTop: brandHeaderTop(insets.top),
+              paddingBottom: 12,
+              gap: 16,
+            }}
+          >
+            <View style={s.between}>
+              <BrandLogo />
+              <View style={[s.row, { gap: 10 }]}>
+                <View
                   style={{
-                    position: "absolute",
-                    width: 184,
-                    height: 108,
-                    left: -32,
-                    top: -30,
+                    paddingHorizontal: 17,
+                    paddingVertical: 8,
+                    backgroundColor: colors.deep,
+                    borderRadius: 24,
                   }}
-                />
+                >
+                  <Text
+                    accessibilityLabel="Demostración local, sin envíos"
+                    style={{
+                      fontFamily: fonts.regular,
+                      color: "#D3E3DC",
+                      fontSize: 10,
+                      letterSpacing: 1,
+                    }}
+                  >
+                    DEMO
+                  </Text>
+                </View>
+                {assistant && (
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Abrir asistente de ayuda"
+                    onPress={() => router.push("/chat")}
+                    style={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: 24,
+                      backgroundColor: colors.deep,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Icon name="message-circle" color="#D3E3DC" />
+                  </Pressable>
+                )}
+              </View>
+            </View>
+            {(back || progress !== undefined) && (
+              <View style={s.row}>
+                {back && (
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Volver"
+                    onPress={
+                      onBack ||
+                      (() =>
+                        router.canGoBack()
+                          ? router.back()
+                          : router.replace("/home"))
+                    }
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 22,
+                      backgroundColor: "#FFFFFF26",
+                      borderWidth: 1,
+                      borderColor: colors.line,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Icon name="arrow-left" />
+                  </Pressable>
+                )}
+                {progress !== undefined && (
+                  <View style={{ flex: 1, gap: 6 }}>
+                    <View style={s.between}>
+                      <Text style={s.kicker}>CADA PASO, MÁS CERCA</Text>
+                      <Text style={s.small}>{Math.round(progress * 100)}%</Text>
+                    </View>
+                    <View
+                      accessibilityRole="progressbar"
+                      accessibilityValue={{
+                        min: 0,
+                        max: 100,
+                        now: Math.round(progress * 100),
+                      }}
+                      style={{
+                        height: 4,
+                        borderRadius: 8,
+                        backgroundColor: "#FFFFFF50",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <View
+                        style={{
+                          height: 4,
+                          width: progress * 100 + "%",
+                          backgroundColor: colors.green,
+                          borderRadius: 8,
+                        }}
+                      />
+                    </View>
+                  </View>
+                )}
               </View>
             )}
-            <View style={[s.row, { gap: 8 }]}>
-              <View style={s.pill}>
-                <Text
-                  accessibilityLabel="Demostración local, sin envíos"
-                  style={[s.small, { fontSize: 10, letterSpacing: 1 }]}
-                >
-                  DEMO
-                </Text>
-              </View>
-              {assistant && (
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="Abrir asistente de ayuda"
-                  onPress={() => router.push("/chat")}
-                  style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: 16,
-                    backgroundColor: colors.lime,
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Icon name="message-circle" size={21} />
-                </Pressable>
-              )}
-            </View>
           </View>
-          {progress !== undefined && (
-            <View
-              accessibilityRole="progressbar"
-              accessibilityValue={{
-                min: 0,
-                max: 100,
-                now: Math.round(progress * 100),
-              }}
-              style={{
-                height: 6,
-                backgroundColor: colors.line,
-                borderRadius: 10,
-              }}
-            >
-              <View
-                style={{
-                  height: 6,
-                  width: `${progress * 100}%`,
-                  backgroundColor: colors.green,
-                  borderRadius: 10,
-                }}
-              />
-            </View>
-          )}
-        </View>
-        <ScrollView
-          ref={scrollRef}
-          onContentSizeChange={() => {
-            if (autoScroll) scrollRef.current?.scrollToEnd({ animated: false });
-          }}
-          key={title}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={s.body}
-          showsVerticalScrollIndicator={false}
-        >
-          {title && (
-            <View style={{ gap: 10 }}>
-              {eyebrow && <Text style={s.kicker}>{eyebrow}</Text>}
-              <Text accessibilityRole="header" style={s.title}>
-                {title}
-              </Text>
-              {subtitle && <Text style={s.text}>{subtitle}</Text>}
-            </View>
-          )}
-          {children}
-        </ScrollView>
-        {footer && <View style={s.footer}>{footer}</View>}
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+          <ScrollView
+            ref={scrollRef}
+            key={title}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={s.body}
+            onContentSizeChange={() => {
+              if (autoScroll)
+                scrollRef.current?.scrollToEnd({ animated: false });
+            }}
+          >
+            {title && (
+              <View style={{ gap: 10, marginBottom: 2 }}>
+                {eyebrow && <Text style={s.kicker}>{eyebrow}</Text>}
+                <Text accessibilityRole="header" style={s.title}>
+                  {title}
+                </Text>
+                {subtitle && <Text style={s.text}>{subtitle}</Text>}
+              </View>
+            )}
+            {children}
+          </ScrollView>
+          {footer && <View style={s.footer}>{footer}</View>}
+        </KeyboardAvoidingView>
+        <BottomNavigation bottomInset={insets.bottom} />
+      </BrandSurface>
+    </View>
   );
 }
 export function InfoModal({
@@ -632,7 +679,7 @@ export function InfoModal({
       >
         <SafeAreaView
           style={{
-            backgroundColor: colors.bg,
+            backgroundColor: "#D6E1DA",
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
             padding: 24,

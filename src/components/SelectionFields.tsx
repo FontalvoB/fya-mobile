@@ -340,7 +340,7 @@ export function DateField({
                   }}
                   style={[
                     styles.month,
-                    { backgroundColor: i === month ? colors.pale : "white" },
+                    { backgroundColor: i === month ? "#BBCDC2" : "#FFFFFF38" },
                   ]}
                 >
                   <Text style={s.label}>{name}</Text>
@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   sheet: {
-    backgroundColor: "white",
+    backgroundColor: "#E0E8E2",
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     maxHeight: "88%",

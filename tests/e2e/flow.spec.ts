@@ -221,19 +221,28 @@ test("registration OTP and identity files", async ({ page }) => {
     })
     .click();
   await page.getByRole("button", { name: "Continuar al código" }).click();
-  await page
-    .getByRole("textbox", { name: "Código de 6 dígitos" })
-    .fill("000000");
+  const codeInput = page.getByRole("textbox", { name: "Código de 6 dígitos" });
+  await expect(codeInput).toBeEmpty();
+  await codeInput.click();
+  await page.keyboard.type("000000");
+  await expect(codeInput).toHaveValue("000000");
   await page.getByRole("button", { name: "Verificar código" }).click();
   await expect(
     page.getByText("Código incorrecto.", { exact: false }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Usar código de prueba" }).click();
+  await codeInput.fill("");
+  await codeInput.pressSequentially("4829");
+  await codeInput.press("Backspace");
+  await expect(codeInput).toHaveValue("482");
+  await codeInput.pressSequentially("913");
+  await expect(codeInput).toHaveValue("482913");
   await page.getByRole("button", { name: "Verificar código" }).click();
   await expect(
     page.getByText("Ahora, tu celular.", { exact: true }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Usar código de prueba" }).click();
+  await expect(codeInput).toBeEmpty();
+  await codeInput.fill("735 160");
+  await expect(codeInput).toHaveValue("735160");
   await page.getByRole("button", { name: "Verificar código" }).click();
   await visualReady(page);
   await page.screenshot({ path: "work/v2-identidad.png" });
@@ -325,7 +334,10 @@ test("responsive welcome and secondary screens", async ({ page }) => {
       page.getByRole("button", { name: "Comenzar mi registro" }),
     ).toBeVisible();
     const feature = await page
-      .getByText("Tú decides", { exact: true })
+      .getByText(
+        "Tu libranza, con claridad desde el primer paso. Para pensionados y docentes.",
+        { exact: true },
+      )
       .boundingBox();
     expect(feature!.x + feature!.width).toBeLessThanOrEqual(width);
     await visualReady(page);
@@ -341,12 +353,12 @@ test("responsive welcome and secondary screens", async ({ page }) => {
     .click();
   await visualReady(page);
   await page.screenshot({ path: "work/inicio.png" });
-  await page.getByRole("button", { name: "Créditos", exact: true }).click();
+  await page.getByRole("button", { name: "Crédito", exact: true }).click();
   await expect(
     page.getByText("Aún no hay créditos para mostrar"),
   ).toBeVisible();
   await page.getByRole("button", { name: "Volver", exact: true }).click();
-  await page.getByRole("button", { name: "Perfil", exact: true }).click();
+  await page.getByRole("button", { name: "Ajustes", exact: true }).click();
   await page
     .getByRole("button", { name: "Ayuda y preguntas frecuentes" })
     .click();

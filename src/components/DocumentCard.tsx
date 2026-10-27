@@ -76,7 +76,7 @@ export function DocumentCard({
         boxShadow: "0px 6px 20px rgba(15,53,42,0.035)",
         borderRadius: 24,
         padding: 20,
-        backgroundColor: "white",
+        backgroundColor: "#FFFFFF20",
         gap: 16,
       }}
     >
@@ -154,7 +154,7 @@ export function DocumentCard({
             alignItems: "center",
             justifyContent: "center",
             gap: 10,
-            backgroundColor: pressed ? "#DFEDDE" : "#F4F8F3",
+            backgroundColor: pressed ? "#FFFFFF50" : "#FFFFFF20",
           })}
         >
           <View
