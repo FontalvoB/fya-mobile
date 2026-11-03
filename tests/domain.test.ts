@@ -10,6 +10,8 @@ import {
   validateAll,
   dateValue,
   policy,
+  validateBirthDate,
+  validateValidationVideo,
 } from "../src/domain/model";
 import { DemoOtp, demoService } from "../src/services/demo";
 function complete() {
@@ -33,7 +35,6 @@ function complete() {
     mimeType: "application/pdf",
     size: 100,
   };
-  d.documents.payslip = { ...d.documents.utility };
   return d;
 }
 test("mandatory utility document cannot be bypassed", () => {
@@ -148,15 +149,41 @@ test("loan supports direct requests and requires a code only with adviser", () =
   d.loan.hasAdviser = false;
   assert.ok(validateLoan(d.loan));
 });
-test("utility belongs to account validation and payslip to application support", () => {
+test("application completes without requesting a payslip", () => {
   const d = complete();
   delete d.documents.utility;
   assert.equal(validateStep(d, 4), undefined);
   assert.ok(validateAccount(d));
-  d.documents.utility = { ...d.documents.payslip! };
-  delete d.documents.payslip;
+  d.documents.utility = { ...d.documents.front! };
   assert.equal(validateAccount(d), undefined);
-  assert.match(validateStep(d, 4)!, /desprendible/);
+  assert.equal(validateAll(d), undefined);
+  d.declaration.reviewed = false;
+  assert.match(validateStep(d, 4)!, /Confirma/);
+});
+
+test("registration requires a valid adult birth date", () => {
+  for (const value of ["", "2026-02-31", "2015-01-01", "2099-01-01"])
+    assert.ok(validateBirthDate(value));
+  assert.equal(validateBirthDate("1965-05-20"), undefined);
+  const d = complete();
+  d.profile.birthDate = "";
+  assert.match(validateAccount(d)!, /nacimiento/);
+});
+
+test("account requires a complete validation video after documents", () => {
+  const d = complete();
+  const video = d.documents.validationVideo!;
+  delete d.documents.validationVideo;
+  assert.match(validateAccount(d)!, /video/);
+  assert.equal(validateAccount(d, false), undefined);
+  for (const invalid of [
+    { ...video, duration: 2 },
+    { ...video, size: 0 },
+    { ...video, mimeType: "image/jpeg" },
+    { ...video, size: 31 * 1024 * 1024 },
+  ])
+    assert.ok(validateValidationVideo(invalid));
+  assert.equal(validateValidationVideo(video), undefined);
 });
 test("inconsistent residence and account simulation profiles are rejected", () => {
   const d = complete();

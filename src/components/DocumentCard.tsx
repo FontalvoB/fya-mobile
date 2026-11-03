@@ -8,24 +8,67 @@ import {
   Pressable,
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
+import * as ImagePicker from "expo-image-picker";
 import { File } from "expo-file-system";
 import { LocalDocument, policy, validateDocument } from "../domain/model";
-import { Icon, LinkButton, Notice, colors, s } from "./ui";
+import { Button, Icon, LinkButton, Notice, colors, s } from "./ui";
 export function DocumentCard({
   title,
   hint,
   value,
   onChange,
   required = true,
+  allowCamera = false,
 }: {
   title: string;
   hint: string;
   value?: LocalDocument;
   onChange: (v: LocalDocument | undefined) => void;
   required?: boolean;
+  allowCamera?: boolean;
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  async function photograph() {
+    setError("");
+    try {
+      if (Platform.OS !== "web") {
+        const permission = await ImagePicker.requestCameraPermissionsAsync();
+        if (!permission.granted) {
+          setError(
+            "Permite el acceso a la cámara en los ajustes o adjunta un archivo.",
+          );
+          return;
+        }
+      }
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ["images"],
+        quality: 0.8,
+        cameraType: ImagePicker.CameraType.back,
+      });
+      if (result.canceled) return;
+      const asset = result.assets[0];
+      const file: LocalDocument = {
+        uri: asset.uri,
+        name: asset.fileName || "documento.jpg",
+        size:
+          asset.fileSize ??
+          (Platform.OS !== "web"
+            ? new File(asset.uri).size
+            : asset.file?.size || 0),
+        mimeType: asset.mimeType || "image/jpeg",
+      };
+      const issue = validateDocument(file);
+      if (issue) throw new Error(issue);
+      onChange(file);
+    } catch (e) {
+      setError(
+        e instanceof Error
+          ? e.message
+          : "No se pudo abrir la cámara. Intenta de nuevo o adjunta un archivo.",
+      );
+    }
+  }
   async function pick() {
     setError("");
     try {
@@ -97,6 +140,17 @@ export function DocumentCard({
       </View>
       <Text style={s.h2}>{title}</Text>
       <Text style={s.small}>{hint}</Text>
+      {allowCamera && (
+        <Button
+          title={
+            (value ? "Volver a tomar foto de " : "Tomar foto de ") +
+            title.toLowerCase()
+          }
+          icon="camera"
+          onPress={photograph}
+          disabled={busy}
+        />
+      )}
       {busy ? (
         <ActivityIndicator color={colors.green} />
       ) : value ? (

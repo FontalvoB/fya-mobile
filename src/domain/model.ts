@@ -12,6 +12,7 @@ export type LocalDocument = {
   size: number;
   mimeType: string;
   demo?: boolean;
+  duration?: number;
 };
 export type Profile = {
   firstName: string;
@@ -81,13 +82,7 @@ export type AccountEvidence = {
   addressConfirmed: boolean;
 };
 export type DocumentKey =
-  | "front"
-  | "back"
-  | "selfie"
-  | "utility"
-  | "payslip"
-  | "accreditation"
-  | "lease";
+  "front" | "back" | "validationVideo" | "utility" | "accreditation" | "lease";
 export type Draft = {
   profile: Profile;
   account: AccountEvidence;
@@ -124,7 +119,6 @@ export const steps = [
   "Residencia fiscal",
   "Salud",
   "Autorizaciones",
-  "Soportes",
   "Resumen",
 ];
 export const emptyProfile: Profile = {
@@ -243,6 +237,30 @@ export function age(value: string, now = new Date()) {
     years--;
   return years;
 }
+export function validateBirthDate(value: string): string | undefined {
+  if (
+    !Number.isFinite(dateValue(value)) ||
+    age(value) < 18 ||
+    dateValue(value) > Date.now()
+  )
+    return "Selecciona una fecha de nacimiento válida. Debes ser mayor de edad.";
+}
+export function validateValidationVideo(
+  file?: LocalDocument,
+): string | undefined {
+  if (!file) return "Graba el video de validación para continuar.";
+  if (
+    !["video/mp4", "video/quicktime", "video/webm"].includes(file.mimeType) ||
+    !file.uri ||
+    !Number.isFinite(file.size) ||
+    file.size <= 0 ||
+    file.size > 30 * 1024 * 1024 ||
+    !Number.isFinite(file.duration) ||
+    file.duration! < 11 ||
+    file.duration! > 15
+  )
+    return "Repite el video completo siguiendo las indicaciones (12 segundos, máximo 30 MB).";
+}
 export function validateDocument(file: LocalDocument): string | undefined {
   if (!policy.mimeTypes.includes(file.mimeType))
     return "Selecciona un PDF, JPG o PNG.";
@@ -341,12 +359,7 @@ export function validateStep(d: Draft, step: number): string | undefined {
     )
       return "Elige al menos un canal, decide sobre publicidad y acepta las autorizaciones requeridas.";
   }
-  if (step === 4) {
-    if (!d.documents.payslip)
-      return "Adjunta el desprendible de pago obligatorio.";
-    return validateDocument(d.documents.payslip);
-  }
-  if (step === 5 && !a.reviewed)
+  if (step === 4 && !a.reviewed)
     return "Confirma que revisaste la información de tu solicitud.";
 }
 export function validateAll(d: Draft) {
@@ -360,8 +373,17 @@ export function validateAll(d: Draft) {
   );
 }
 
-export function validateAccount(d: Draft): string | undefined {
+export function validateAccount(
+  d: Draft,
+  requireVideo = true,
+): string | undefined {
   const a = d.account;
+  const birthIssue = validateBirthDate(d.profile.birthDate);
+  if (birthIssue) return birthIssue;
+  const videoIssue = requireVideo
+    ? validateValidationVideo(d.documents.validationVideo)
+    : undefined;
+  if (videoIssue) return videoIssue;
   if (!d.documents.front || !d.documents.back)
     return "Selecciona las dos caras de tu documento.";
   if (!["Pensionado", "Docente"].includes(a.customerType))
@@ -428,5 +450,13 @@ export function demoDraft(): Draft {
       mimeType: "application/pdf",
       demo: true,
     };
+  d.documents.validationVideo = {
+    name: "video-ficticio-demo.mp4",
+    uri: "demo://fixture",
+    size: 128,
+    mimeType: "video/mp4",
+    duration: 12,
+    demo: true,
+  };
   return d;
 }

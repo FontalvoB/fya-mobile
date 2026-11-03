@@ -6,11 +6,11 @@ import { Screen, Card, Icon, Notice, Button, s } from "../components/ui";
 const items = [
   [
     "¿Cómo funciona el recorrido?",
-    "Crea un perfil de prueba, selecciona tu documento, simula un crédito y completa la solicitud. Revisa el resumen y finaliza con el código de demostración.",
+    "Crea un perfil de prueba, selecciona tu documento, simula un crédito y completa la solicitud. Si el resultado es preaprobado, continúa con las ocho secciones de radicación, adjunta los soportes y confirma con un nuevo código de prueba.",
   ],
   [
     "¿Qué documentos necesito?",
-    "Para crear la cuenta: identidad por ambas caras, acreditación de pensionado/docente y recibo de servicio público de los últimos 90 días. Si la vivienda no es propia, contrato de arrendamiento. Durante la solicitud: desprendible de pago. PDF, JPG o PNG de máximo 5 MB por archivo.",
+    "Para crear la cuenta: identidad por ambas caras, acreditación de pensionado/docente y recibo de servicio público de los últimos 90 días. Si la vivienda no es propia, contrato de arrendamiento. Después: video guiado de validación. La simulación no pide desprendible. En la radicación se reutiliza la identidad y se adjuntan comprobante de ingresos y certificado bancario de los últimos 30 días. PDF, JPG o PNG de máximo 5 MB por archivo; solo la identidad permite tomar fotos.",
   ],
   [
     "¿Se envía mi información?",

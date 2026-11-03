@@ -1,4 +1,15 @@
 import { test, expect, Page } from "@playwright/test";
+test.use({
+  launchOptions: {
+    args: [
+      "--use-fake-device-for-media-stream",
+      "--use-fake-ui-for-media-stream",
+      "--disable-accelerated-video-encode",
+      "--disable-features=CalculateNativeWinOcclusion",
+      "--disable-backgrounding-occluded-windows",
+    ],
+  },
+});
 async function visualReady(page: Page) {
   await page.evaluate(async () => {
     await document.fonts.ready;
@@ -91,51 +102,12 @@ test("full application with conditional fields, documents, editing and tracking"
     })
     .click();
   await page.getByRole("button", { name: "Guardar y continuar" }).click();
-  await visualReady(page);
-  await page.screenshot({ path: "work/soportes.png" });
-  await page.getByRole("button", { name: "Guardar y continuar" }).click();
   await expect(
-    page.getByText("Adjunta el desprendible de pago obligatorio"),
+    page.getByRole("heading", { name: "Todo en su lugar." }),
   ).toBeVisible();
-  await upload(
-    page,
-    "Seleccionar desprendible de pago",
-    "incorrecto.txt",
-    "text/plain",
-    Buffer.from("Archivo de prueba"),
-  );
-  await expect(page.getByText("Selecciona un PDF, JPG o PNG.")).toBeVisible();
-  await upload(
-    page,
-    "Seleccionar desprendible de pago",
-    "grande.pdf",
-    "application/pdf",
-    Buffer.alloc(5 * 1024 * 1024 + 1, 32),
-  );
   await expect(
-    page.getByText("El archivo supera los 5 MB.", { exact: false }),
-  ).toBeVisible();
-  await upload(page, "Seleccionar desprendible de pago");
-  await expect(
-    page.getByText("recibo-demo.pdf", { exact: true }),
-  ).toBeVisible();
-  await page
-    .getByRole("button", { name: "Eliminar desprendible de pago" })
-    .click();
-  await expect(
-    page.getByRole("button", {
-      name: "Seleccionar desprendible de pago",
-    }),
-  ).toBeVisible();
-  await upload(page, "Seleccionar desprendible de pago");
-  await upload(
-    page,
-    "Reemplazar desprendible de pago",
-    "recibo-reemplazado.pdf",
-  );
-  await visualReady(page);
-  await page.screenshot({ path: "work/documentos-seleccionados.png" });
-  await page.getByRole("button", { name: "Guardar y continuar" }).click();
+    page.getByText("Desprendible de pago", { exact: true }),
+  ).toHaveCount(0);
   await page.getByRole("button", { name: "Editar residencia fiscal" }).click();
   await expect(
     page.getByRole("textbox", { name: "Número TIN o SSN *" }),
@@ -178,7 +150,6 @@ test("full application with conditional fields, documents, editing and tracking"
     "Tu residencia fiscal.",
     "Tu bienestar importa.",
     "Tú tienes el control.",
-    "Tus soportes, aquí.",
   ]) {
     await expect(page.getByRole("heading", { name: heading })).toBeVisible();
     await page.getByRole("button", { name: "Guardar y continuar" }).click();
@@ -206,12 +177,41 @@ test("full application with conditional fields, documents, editing and tracking"
   expect(errors).toEqual([]);
 });
 test("registration OTP and identity files", async ({ page }) => {
+  // Feed deterministic frames through the real browser recorder; no physical camera is used in CI.
+  await page.addInitScript(() => {
+    navigator.mediaDevices.getUserMedia = async () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 640;
+      canvas.height = 480;
+      const ctx = canvas.getContext("2d")!;
+      let frame = 0;
+      const timer = setInterval(() => {
+        ctx.fillStyle = "#075459";
+        ctx.fillRect(0, 0, 640, 480);
+        ctx.fillStyle = "#d2ed95";
+        ctx.fillRect((frame++ * 8) % 600, 180, 40, 80);
+      }, 50);
+      const stream = canvas.captureStream(20);
+      const track = stream.getVideoTracks()[0];
+      const stop = track.stop.bind(track);
+      track.stop = () => {
+        clearInterval(timer);
+        stop();
+      };
+      return stream;
+    };
+  });
   await page.goto("/");
   await page.getByRole("button", { name: "Comenzar mi registro" }).click();
   await visualReady(page);
   await page.screenshot({ path: "work/v2-registro.png" });
   await page.getByRole("button", { name: "Continuar al código" }).click();
   await expect(page.getByText("Escribe tu primer nombre.")).toBeVisible();
+  await expect(
+    page.getByText(
+      "Selecciona una fecha de nacimiento válida. Debes ser mayor de edad.",
+    ),
+  ).toBeVisible();
   await page
     .getByRole("button", { name: "Completar con datos de ejemplo" })
     .click();
@@ -246,12 +246,53 @@ test("registration OTP and identity files", async ({ page }) => {
   await page.getByRole("button", { name: "Verificar código" }).click();
   await visualReady(page);
   await page.screenshot({ path: "work/v2-identidad.png" });
-  await page.getByRole("button", { name: "Continuar a revisión" }).click();
   await expect(
-    page.getByText("Selecciona las dos caras de tu documento."),
+    page.getByRole("button", { name: "Inicio", exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", {
+      name: "Tomar foto de frente del documento",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", {
+      name: "Seleccionar reverso del documento",
+      exact: true,
+    }),
+  ).toHaveCount(0);
+  await page.getByRole("button", { name: "Guardar y continuar" }).click();
+  await expect(
+    page.getByText("Toma una foto o adjunta esta cara", { exact: false }),
+  ).toBeVisible();
+  await upload(
+    page,
+    "Seleccionar frente del documento",
+    "incorrecto.txt",
+    "text/plain",
+    Buffer.from("Prueba"),
+  );
+  await expect(page.getByText("Selecciona un PDF, JPG o PNG.")).toBeVisible();
+  await upload(
+    page,
+    "Seleccionar frente del documento",
+    "grande.pdf",
+    "application/pdf",
+    Buffer.alloc(5 * 1024 * 1024 + 1, 32),
+  );
+  await expect(
+    page.getByText("El archivo supera los 5 MB.", { exact: false }),
   ).toBeVisible();
   await upload(page, "Seleccionar frente del documento", "frente.pdf");
+  await page.getByRole("button", { name: "Guardar y continuar" }).click();
+  await expect(
+    page.getByRole("button", {
+      name: "Seleccionar frente del documento",
+      exact: true,
+    }),
+  ).toHaveCount(0);
   await upload(page, "Seleccionar reverso del documento", "reverso.pdf");
+  await page.getByRole("button", { name: "Guardar y continuar" }).click();
   await page.getByRole("radio", { name: "Docente", exact: true }).click();
   await page
     .getByRole("button", { name: "Tipo de acreditación *", exact: true })
@@ -301,7 +342,9 @@ test("registration OTP and identity files", async ({ page }) => {
       name: "El recibo corresponde a mi dirección de residencia",
     })
     .click();
-  await page.getByRole("button", { name: "Continuar a revisión" }).click();
+  await page
+    .getByRole("button", { name: "Continuar al video de validación" })
+    .click();
   await expect(
     page.getByText("Adjunta el contrato de arrendamiento porque", {
       exact: false,
@@ -312,11 +355,53 @@ test("registration OTP and identity files", async ({ page }) => {
     "Seleccionar contrato de arrendamiento",
     "contrato-demo.pdf",
   );
+  await page
+    .getByRole("button", { name: "Continuar al video de validación" })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Valida tu identidad en video." }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Continuar a revisión" }).click();
+  await expect(
+    page.getByText("Graba el video de validación para continuar."),
+  ).toBeVisible();
+  await page
+    .getByRole("checkbox", {
+      name: "Autorizo el uso de mi imagen para el video de validación",
+    })
+    .click();
+  await page.bringToFront();
+  const cameraSession = await page.context().newCDPSession(page);
+  await cameraSession.send("Emulation.setFocusEmulationEnabled", {
+    enabled: true,
+  });
+  await page.getByRole("button", { name: "Permitir cámara" }).click();
+  await page
+    .getByRole("button", { name: "Grabar video de 12 segundos" })
+    .click();
+  await page.getByRole("button", { name: "Cancelar grabación" }).click();
+  await expect(
+    page.getByText(
+      "La grabación se interrumpió. Repite los 12 segundos completos.",
+    ),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Grabar video de 12 segundos" })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Continuar a revisión" }),
+  ).toBeDisabled();
+  await expect(page.getByText("Video grabado", { exact: true })).toBeVisible({
+    timeout: 20000,
+  });
   await page.getByRole("button", { name: "Continuar a revisión" }).click();
   await page
     .getByRole("button", { name: "Simular revisión favorable" })
     .click();
   await expect(page.getByText("Hola, Ana.", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Inicio", exact: true }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Simular mi crédito" }).click();
   await expect(page.getByText("Docente", { exact: true })).toBeVisible();
   await expect(
@@ -366,4 +451,18 @@ test("responsive welcome and secondary screens", async ({ page }) => {
   await expect(
     page.getByText("No. Los datos están en memoria", { exact: false }),
   ).toBeVisible();
+  await page.getByRole("button", { name: "Ajustes", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Cerrar sesión de prueba", exact: true })
+    .click();
+  await page
+    .getByRole("button", {
+      name: "Sí, cerrar y eliminar borrador",
+      exact: true,
+    })
+    .click();
+  for (const name of ["Inicio", "Crédito", "Pagos", "Más", "Ajustes"])
+    await expect(page.getByRole("button", { name, exact: true })).toHaveCount(
+      0,
+    );
 });

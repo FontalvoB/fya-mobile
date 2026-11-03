@@ -14,7 +14,7 @@ import {
 import { useSession } from "../state/session";
 import { money } from "../domain/model";
 export default function Tracking() {
-  const { result } = useSession();
+  const { result, filingReceipt } = useSession();
   const timeline = result
     ? [
         ["Solicitud de prueba creada", "Referencia local. No enviada.", true],
@@ -26,6 +26,15 @@ export default function Tracking() {
             ? "Calculada con parámetros de prueba."
             : "Ajusta monto o plazo para volver a evaluar.",
           true,
+        ],
+        [
+          "Radicación",
+          filingReceipt
+            ? `Completada en esta sesión · ${filingReceipt.id}`
+            : result.favorable
+              ? "Completa tus datos y soportes."
+              : "No disponible sin preaprobación.",
+          !!filingReceipt,
         ],
         [
           "Revisión documental",
@@ -86,7 +95,7 @@ export default function Tracking() {
                   >
                     <Icon name={done ? "check" : "clock"} size={17} />
                   </View>
-                  {i < 4 && (
+                  {i < timeline.length - 1 && (
                     <View
                       style={{
                         width: 1,
@@ -104,6 +113,16 @@ export default function Tracking() {
               </View>
             ))}
           </Card>
+          {result.favorable && (
+            <Button
+              title={
+                filingReceipt
+                  ? "Ver radicación de prueba"
+                  : "Continuar mi radicación"
+              }
+              onPress={() => router.push("/filing")}
+            />
+          )}
           <Button
             secondary
             title="Ver detalle del resultado"

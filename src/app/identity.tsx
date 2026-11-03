@@ -1,7 +1,5 @@
-import { ArtPanel } from "../components/visuals";
 import React, { useState } from "react";
-import { View, Text, Image } from "react-native";
-import * as ImagePicker from "expo-image-picker";
+import { View, Text } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import {
   Screen,
@@ -11,181 +9,272 @@ import {
   LinkButton,
   Card,
   Icon,
-  Reveal,
   s,
 } from "../components/ui";
 import { AccountDocuments } from "../components/AccountDocuments";
-import { validateAccount } from "../domain/model";
+import { VideoRecorder } from "../components/VideoRecorder";
+import {
+  validateAccount,
+  validateDocument,
+  validateValidationVideo,
+} from "../domain/model";
 import { useSession } from "../state/session";
+
+const instructions = [
+  "Mira de frente a la cámara",
+  "Gira lentamente la cabeza a tu izquierda",
+  "Gira lentamente la cabeza a tu derecha",
+  "Vuelve a mirar de frente",
+];
+const stages = [
+  "Frente del documento",
+  "Reverso del documento",
+  "Documentos de cuenta",
+  "Video de validación",
+  "Revisión",
+];
+
 export default function Identity() {
   const { draft, setDraft, setIdentity } = useSession();
   const { edit } = useLocalSearchParams<{ edit?: string }>();
+  const [step, setStep] = useState(0);
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
-  const [review, setReview] = useState(false);
   const [busy, setBusy] = useState(false);
-  async function selfie() {
+  const [recording, setRecording] = useState(false);
+  const [seconds, setSeconds] = useState(0);
+  function go(next: number) {
     setError("");
-    try {
-      const p = await ImagePicker.requestCameraPermissionsAsync();
-      if (!p.granted) {
-        setError("La cámara no tiene permiso. Puedes continuar sin selfie.");
+    setStep(next);
+  }
+  function next() {
+    if (step < 2) {
+      const file = draft.documents[step === 0 ? "front" : "back"];
+      const issue = file
+        ? validateDocument(file)
+        : "Toma una foto o adjunta esta cara del documento para continuar.";
+      if (issue) {
+        setError(issue);
         return;
       }
-      const r = await ImagePicker.launchCameraAsync({
-        mediaTypes: ["images"],
-        quality: 0.65,
-        cameraType: ImagePicker.CameraType.front,
-      });
-      if (!r.canceled) {
-        const a = r.assets[0];
-        setDraft((d) => ({
-          ...d,
-          documents: {
-            ...d.documents,
-            selfie: {
-              uri: a.uri,
-              name: "selfie.jpg",
-              size: a.fileSize || 0,
-              mimeType: "image/jpeg",
-            },
-          },
-        }));
+    } else if (step === 2) {
+      const issue = validateAccount(draft, false);
+      if (issue) {
+        setError(issue);
+        return;
       }
-    } catch {
-      setError("No se pudo abrir la cámara. Puedes continuar sin selfie.");
+    } else {
+      const issue = validateAccount(draft);
+      if (issue) {
+        setError(issue);
+        return;
+      }
     }
+    if (step < 4) {
+      go(step + 1);
+      return;
+    }
+    if (edit === "1") {
+      router.back();
+      return;
+    }
+    setBusy(true);
+    setIdentity(true);
+    router.replace("/home");
   }
   return (
     <Screen
-      title={review ? "Todo listo para revisar." : "Tu cuenta, paso a paso."}
-      eyebrow="TU CUENTA · 03 / 03"
-      progress={review ? 1 : 0.7}
-      subtitle={
-        review
-          ? "Este expediente permanece en tu dispositivo. La revisión que sigue es una simulación."
-          : "Reúne identidad, acreditación y residencia para crear tu cuenta."
+      title={
+        step === 4
+          ? "Todo listo para revisar."
+          : step === 3
+            ? "Valida tu identidad en video."
+            : "Tu cuenta, paso a paso."
       }
+      eyebrow={`TU CUENTA · DOCUMENTOS ${step + 1} / ${stages.length}`}
+      subtitle={stages[step]}
+      progress={(step + 1) / stages.length}
+      onBack={() => {
+        if (!recording) {
+          if (step > 0) go(step - 1);
+          else router.back();
+        }
+      }}
       footer={
-        <Button
-          busy={busy}
-          title={
-            edit === "1"
-              ? "Guardar documentos de cuenta"
-              : review
-                ? "Simular revisión favorable"
-                : "Continuar a revisión"
-          }
-          onPress={async () => {
-            const issue = validateAccount(draft);
-            if (issue) {
-              setError(issue);
-              return;
+        <>
+          {!!error && <Notice error>{error}</Notice>}
+          <Button
+            busy={busy}
+            disabled={recording}
+            title={
+              step === 4
+                ? edit === "1"
+                  ? "Guardar documentos de cuenta"
+                  : "Simular revisión favorable"
+                : step === 2
+                  ? "Continuar al video de validación"
+                  : step === 3
+                    ? "Continuar a revisión"
+                    : "Guardar y continuar"
             }
-            if (edit === "1") {
-              setError("");
-              router.back();
-              return;
-            }
-            if (!review) {
-              setReview(true);
-              setError("");
-              return;
-            }
-            setBusy(true);
-            await new Promise((r) => setTimeout(r, 700));
-            setIdentity(true);
-            router.replace("/home");
-          }}
-        />
+            onPress={next}
+          />
+          {step > 0 && (
+            <Button
+              secondary
+              title="Volver al paso anterior"
+              disabled={recording}
+              onPress={() => go(step - 1)}
+            />
+          )}
+        </>
       }
     >
-      <ArtPanel
-        kind="documents"
-        title={review ? "Expediente preparado" : "Que cada detalle se vea"}
-        caption="Buena luz, texto legible y las cuatro esquinas visibles."
-      />
-      {review ? (
-        <Reveal>
+      {step < 2 && (
+        <Card>
+          <Icon name="camera" />
+          <Text style={s.h2}>
+            {step === 0 ? "Primero, el frente" : "Ahora, el reverso"}
+          </Text>
+          <Text style={s.text}>
+            {step === 0
+              ? "Coloca tu documento sobre una superficie plana. Busca buena luz, evita reflejos y deja visibles las cuatro esquinas."
+              : "Da la vuelta a tu documento. Asegúrate de que el código y todos los datos se puedan leer."}
+          </Text>
+          <Text style={s.small}>
+            Toma la foto o adjunta un archivo. Revisa que se vea completo y
+            nítido antes de continuar.
+          </Text>
+        </Card>
+      )}
+      {step < 3 && (
+        <AccountDocuments
+          key={step}
+          stage={step === 0 ? "front" : step === 1 ? "back" : "evidence"}
+        />
+      )}
+      {step === 3 && (
+        <>
+          <Card>
+            <Text style={s.h2}>Un video de 12 segundos</Text>
+            <Text style={s.text}>
+              Ubica tu rostro en el centro, con buena luz y sin cubrirlo. La
+              grabación no incluye audio y termina automáticamente.
+            </Text>
+            {instructions.map((text, i) => (
+              <Text key={text} style={s.text}>
+                {i + 1}. {text}.
+              </Text>
+            ))}
+            <Choice
+              label="Autorizo el uso de mi imagen para el video de validación"
+              selected={consent}
+              onPress={() => {
+                if (recording) return;
+                setConsent(!consent);
+                if (consent)
+                  setDraft((d) => ({
+                    ...d,
+                    documents: { ...d.documents, validationVideo: undefined },
+                    declaration: { ...d.declaration, reviewed: false },
+                  }));
+              }}
+            />
+          </Card>
+          {draft.documents.validationVideo ? (
+            <Card>
+              <Icon name="check-circle" />
+              <Text style={s.h2}>
+                {draft.documents.validationVideo.demo
+                  ? "Video ficticio de demostración"
+                  : "Video grabado"}
+              </Text>
+              <Text style={s.text}>
+                {draft.documents.validationVideo.name} ·{" "}
+                {Math.round(draft.documents.validationVideo.duration || 0)}{" "}
+                segundos
+              </Text>
+              <LinkButton
+                title="Repetir video"
+                onPress={() =>
+                  setDraft((d) => ({
+                    ...d,
+                    documents: { ...d.documents, validationVideo: undefined },
+                    declaration: { ...d.declaration, reviewed: false },
+                  }))
+                }
+              />
+            </Card>
+          ) : (
+            consent && (
+              <Card>
+                <Text accessibilityLiveRegion="polite" style={s.h2}>
+                  {recording
+                    ? instructions[Math.min(3, Math.floor(seconds / 3))]
+                    : "Prepárate para mirar de frente"}
+                </Text>
+                {recording && (
+                  <Text style={s.label}>
+                    Grabando · {Math.min(12, Math.floor(seconds))} / 12 segundos
+                  </Text>
+                )}
+                <VideoRecorder
+                  instruction={
+                    recording
+                      ? instructions[Math.min(3, Math.floor(seconds / 3))]
+                      : "Ubica tu rostro en el centro"
+                  }
+                  onBusy={setRecording}
+                  onProgress={setSeconds}
+                  onRecorded={(file) => {
+                    const issue = validateValidationVideo(file);
+                    if (issue) {
+                      setError(issue);
+                      return;
+                    }
+                    setError("");
+                    setDraft((d) => ({
+                      ...d,
+                      documents: { ...d.documents, validationVideo: file },
+                      declaration: { ...d.declaration, reviewed: false },
+                    }));
+                  }}
+                />
+              </Card>
+            )
+          )}
+          <Notice>
+            El video permanece en esta sesión. La demo no comprueba movimientos
+            ni realiza validación biométrica automática.
+          </Notice>
+        </>
+      )}
+      {step === 4 && (
+        <>
           <Card>
             {[
-              "Correo: código de prueba confirmado",
-              "Celular: código de prueba confirmado",
-              "Documento: archivos seleccionados localmente",
+              "Correo y celular: códigos de prueba confirmados",
+              "Documento: frente y reverso seleccionados",
               `Perfil: ${draft.account.customerType} · ${draft.account.accreditationType}`,
               "Acreditación y recibo: seleccionados localmente",
               draft.account.ownsHome
                 ? "Vivienda propia declarada"
                 : "Contrato de arrendamiento seleccionado",
-              "Revisión del analista: pendiente de simulación",
-            ].map((v, i) => (
-              <View key={v} style={s.row}>
-                <Icon name={i === 6 ? "clock" : "check-circle"} />
-                <Text style={[s.text, { flex: 1 }]}>{v}</Text>
+              "Video de validación: disponible en esta sesión",
+            ].map((text) => (
+              <View key={text} style={s.row}>
+                <Icon name="check-circle" />
+                <Text style={[s.text, { flex: 1 }]}>{text}</Text>
               </View>
             ))}
           </Card>
           <Notice>
             No se ha verificado oficialmente tu identidad ni se han enviado los
-            documentos.
+            documentos o el video. La revisión que sigue es una simulación.
           </Notice>
-          <LinkButton
-            title="Revisar mis documentos"
-            onPress={() => setReview(false)}
-          />
-        </Reveal>
-      ) : (
-        <>
-          <AccountDocuments />
-          <Card>
-            <Text style={s.h2}>Una selfie, si quieres</Text>
-            <Text style={s.text}>
-              Opcional. No realizamos comparación facial en esta demo.
-            </Text>
-            <Choice
-              label="Autorizo el uso de mi imagen en esta demostración"
-              selected={consent}
-              onPress={() => {
-                setConsent(!consent);
-                if (consent)
-                  setDraft((d) => ({
-                    ...d,
-                    documents: { ...d.documents, selfie: undefined },
-                  }));
-              }}
-            />
-            {draft.documents.selfie && (
-              <Image
-                source={{ uri: draft.documents.selfie.uri }}
-                style={{ height: 180, borderRadius: 18 }}
-              />
-            )}
-            <Button
-              title={
-                draft.documents.selfie
-                  ? "Repetir selfie"
-                  : "Tomar selfie opcional"
-              }
-              secondary
-              disabled={!consent}
-              onPress={selfie}
-              icon="camera"
-            />
-            {draft.documents.selfie && (
-              <LinkButton
-                title="Eliminar selfie"
-                onPress={() =>
-                  setDraft((d) => ({
-                    ...d,
-                    documents: { ...d.documents, selfie: undefined },
-                  }))
-                }
-              />
-            )}
-          </Card>
+          <LinkButton title="Revisar mis documentos" onPress={() => go(0)} />
         </>
       )}
-      {!!error && <Notice error>{error}</Notice>}
     </Screen>
   );
 }

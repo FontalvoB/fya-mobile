@@ -13,7 +13,11 @@ import { SectionHeading } from "./visuals";
 import { DocumentCard } from "./DocumentCard";
 import { ResidenceFields } from "./ResidenceFields";
 import { SelectField, DateField } from "./SelectionFields";
-export function AccountDocuments() {
+export function AccountDocuments({
+  stage = "evidence",
+}: {
+  stage?: "front" | "back" | "evidence";
+}) {
   const { draft, setDraft } = useSession();
   const a = draft.account;
   function evidence(v: Partial<AccountEvidence>) {
@@ -46,122 +50,143 @@ export function AccountDocuments() {
           reemplazarlos por archivos de prueba seleccionados en tu dispositivo.
         </Notice>
       )}
-      <SectionHeading number="01" title="Tu documento de identidad" />
-      <DocumentCard
-        title="Frente del documento"
-        hint="Buena luz, sin reflejos y con las cuatro esquinas visibles."
-        value={draft.documents.front}
-        onChange={(value) => document("front", value)}
-      />
-      <DocumentCard
-        title="Reverso del documento"
-        hint="Asegúrate de que el código y el texto se puedan leer."
-        value={draft.documents.back}
-        onChange={(value) => document("back", value)}
-      />
-      <SectionHeading
-        number="02"
-        title="Tu vínculo en Colombia"
-        detail="Selecciona el perfil que puedes acreditar"
-      />
-      <Card>
-        <Text style={s.label}>Soy *</Text>
-        <Segments
-          items={["Pensionado", "Docente"]}
-          value={a.customerType}
-          onChange={(type) => {
-            if (type === a.customerType) return;
-            const customerType = type as "Pensionado" | "Docente";
-            setDraft((d) => ({
-              ...d,
-              account: { ...d.account, customerType, accreditationType: "" },
-              profile: {
-                ...d.profile,
-                occupation: type === "Docente" ? "Docente" : "Pensionado",
-              },
-              loan: {
-                ...d.loan,
-                type,
-                payer:
-                  type === "Pensionado"
-                    ? "FOPEP"
-                    : "Secretaría de Educación (prueba)",
-                pensionDeduction: 0,
-              },
-              documents: { ...d.documents, accreditation: undefined },
-              declaration: { ...d.declaration, reviewed: false },
-            }));
-          }}
-        />
-        <SelectField
-          label="Tipo de acreditación *"
-          value={a.accreditationType}
-          options={accreditationTypes}
-          onChange={(accreditationType) => evidence({ accreditationType })}
-        />
-      </Card>
-      <DocumentCard
-        title="Documento de acreditación"
-        hint={
-          a.customerType === "Docente"
-            ? "Acta de nombramiento, resolución u otro documento que acredite tu condición de docente en Colombia."
-            : "Resolución u otro documento que acredite tu condición de pensionado en Colombia."
-        }
-        value={draft.documents.accreditation}
-        onChange={(value) => document("accreditation", value)}
-      />
-      <SectionHeading
-        number="03"
-        title="Tu residencia"
-        detail="El recibo se solicita al crear tu cuenta"
-      />
-      <Card>
-        <ResidenceFields profile={draft.profile} onChange={profile} />
-        <YesNo
-          label="¿La vivienda de residencia es de tu propiedad?"
-          value={a.ownsHome}
-          onChange={(ownsHome) => {
-            evidence({ ownsHome });
-            if (ownsHome) document("lease", undefined);
-          }}
-        />
-      </Card>
-      <DocumentCard
-        title="Recibo de servicio público"
-        hint="Un recibo con tu dirección y fecha de los últimos 90 días. "
-        value={draft.documents.utility}
-        onChange={(value) => document("utility", value)}
-      />
-      <Card>
-        <SelectField
-          label="Tipo de servicio *"
-          value={a.utilityType}
-          options={utilityTypes}
-          onChange={(utilityType) => evidence({ utilityType })}
-        />
-        <DateField
-          label="Fecha de emisión del recibo *"
-          value={a.utilityDate}
-          onChange={(utilityDate) => evidence({ utilityDate })}
-        />
-        <Choice
-          label="El recibo corresponde a mi dirección de residencia"
-          detail={`${draft.profile.address || "Completa tu dirección"}, ${draft.profile.city || "selecciona tu ciudad"}`}
-          selected={a.addressConfirmed}
-          onPress={() => evidence({ addressConfirmed: !a.addressConfirmed })}
-        />
-        <Text style={s.small}>
-          Comprobamos la fecha declarada y los metadatos del archivo. No se
-          verifica oficialmente su contenido.
-        </Text>
-      </Card>
-      {a.ownsHome === false && (
-        <DocumentCard
-          title="Contrato de arrendamiento"
-          hint="Adjunta el contrato de la vivienda donde resides. Es obligatorio cuando indicas que la vivienda no es de tu propiedad."
-          value={draft.documents.lease}
-          onChange={(value) => document("lease", value)}
-        />
+      {stage === "front" && (
+        <>
+          <SectionHeading number="01" title="Frente de tu documento" />
+          <DocumentCard
+            title="Frente del documento"
+            allowCamera
+            hint="Buena luz, sin reflejos y con las cuatro esquinas visibles."
+            value={draft.documents.front}
+            onChange={(value) => document("front", value)}
+          />
+        </>
+      )}
+      {stage === "back" && (
+        <>
+          <SectionHeading number="02" title="Reverso de tu documento" />
+          <DocumentCard
+            title="Reverso del documento"
+            allowCamera
+            hint="Asegúrate de que el código y el texto se puedan leer."
+            value={draft.documents.back}
+            onChange={(value) => document("back", value)}
+          />
+        </>
+      )}
+      {stage === "evidence" && (
+        <>
+          <SectionHeading
+            number="02"
+            title="Tu vínculo en Colombia"
+            detail="Selecciona el perfil que puedes acreditar"
+          />
+          <Card>
+            <Text style={s.label}>Soy *</Text>
+            <Segments
+              items={["Pensionado", "Docente"]}
+              value={a.customerType}
+              onChange={(type) => {
+                if (type === a.customerType) return;
+                const customerType = type as "Pensionado" | "Docente";
+                setDraft((d) => ({
+                  ...d,
+                  account: {
+                    ...d.account,
+                    customerType,
+                    accreditationType: "",
+                  },
+                  profile: {
+                    ...d.profile,
+                    occupation: type === "Docente" ? "Docente" : "Pensionado",
+                  },
+                  loan: {
+                    ...d.loan,
+                    type,
+                    payer:
+                      type === "Pensionado"
+                        ? "FOPEP"
+                        : "Secretaría de Educación (prueba)",
+                    pensionDeduction: 0,
+                  },
+                  documents: { ...d.documents, accreditation: undefined },
+                  declaration: { ...d.declaration, reviewed: false },
+                }));
+              }}
+            />
+            <SelectField
+              label="Tipo de acreditación *"
+              value={a.accreditationType}
+              options={accreditationTypes}
+              onChange={(accreditationType) => evidence({ accreditationType })}
+            />
+          </Card>
+          <DocumentCard
+            title="Documento de acreditación"
+            hint={
+              a.customerType === "Docente"
+                ? "Acta de nombramiento, resolución u otro documento que acredite tu condición de docente en Colombia."
+                : "Resolución u otro documento que acredite tu condición de pensionado en Colombia."
+            }
+            value={draft.documents.accreditation}
+            onChange={(value) => document("accreditation", value)}
+          />
+          <SectionHeading
+            number="03"
+            title="Tu residencia"
+            detail="El recibo se solicita al crear tu cuenta"
+          />
+          <Card>
+            <ResidenceFields profile={draft.profile} onChange={profile} />
+            <YesNo
+              label="¿La vivienda de residencia es de tu propiedad?"
+              value={a.ownsHome}
+              onChange={(ownsHome) => {
+                evidence({ ownsHome });
+                if (ownsHome) document("lease", undefined);
+              }}
+            />
+          </Card>
+          <DocumentCard
+            title="Recibo de servicio público"
+            hint="Un recibo con tu dirección y fecha de los últimos 90 días. "
+            value={draft.documents.utility}
+            onChange={(value) => document("utility", value)}
+          />
+          <Card>
+            <SelectField
+              label="Tipo de servicio *"
+              value={a.utilityType}
+              options={utilityTypes}
+              onChange={(utilityType) => evidence({ utilityType })}
+            />
+            <DateField
+              label="Fecha de emisión del recibo *"
+              value={a.utilityDate}
+              onChange={(utilityDate) => evidence({ utilityDate })}
+            />
+            <Choice
+              label="El recibo corresponde a mi dirección de residencia"
+              detail={`${draft.profile.address || "Completa tu dirección"}, ${draft.profile.city || "selecciona tu ciudad"}`}
+              selected={a.addressConfirmed}
+              onPress={() =>
+                evidence({ addressConfirmed: !a.addressConfirmed })
+              }
+            />
+            <Text style={s.small}>
+              Comprobamos la fecha declarada y los metadatos del archivo. No se
+              verifica oficialmente su contenido.
+            </Text>
+          </Card>
+          {a.ownsHome === false && (
+            <DocumentCard
+              title="Contrato de arrendamiento"
+              hint="Adjunta el contrato de la vivienda donde resides. Es obligatorio cuando indicas que la vivienda no es de tu propiedad."
+              value={draft.documents.lease}
+              onChange={(value) => document("lease", value)}
+            />
+          )}
+        </>
       )}
     </>
   );

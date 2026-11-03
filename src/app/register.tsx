@@ -1,4 +1,4 @@
-import { SelectField } from "../components/SelectionFields";
+import { SelectField, DateField } from "../components/SelectionFields";
 import { docTypes } from "../domain/catalogs";
 import { ArtPanel, SectionHeading } from "../components/visuals";
 import React, { useState } from "react";
@@ -18,13 +18,19 @@ import {
   s,
 } from "../components/ui";
 import { useSession } from "../state/session";
-import { demoProfile } from "../domain/model";
+import { demoProfile, validateBirthDate } from "../domain/model";
 const schema = z.object({
   firstName: z.string().trim().min(2, "Escribe tu primer nombre."),
   secondName: z.string(),
   lastName: z.string().trim().min(2, "Escribe tu primer apellido."),
   secondLastName: z.string(),
   docType: z.string(),
+  birthDate: z
+    .string()
+    .refine(
+      (value) => !validateBirthDate(value),
+      "Selecciona una fecha de nacimiento válida. Debes ser mayor de edad.",
+    ),
   docNumber: z.string().regex(/^\d{6,12}$/, "Usa de 6 a 12 dígitos."),
   email: z.string().email("Escribe un correo válido."),
   phone: z.string().regex(/^\d{10}$/, "Escribe 10 dígitos."),
@@ -96,6 +102,27 @@ export default function Register() {
               value={field.value}
               onChange={field.onChange}
             />
+          )}
+        />
+        <Controller
+          control={control}
+          name="birthDate"
+          render={({ field, fieldState }) => (
+            <>
+              <DateField
+                label="Fecha de nacimiento *"
+                value={field.value}
+                maxDate={new Date(
+                  new Date().setFullYear(new Date().getFullYear() - 18),
+                )
+                  .toISOString()
+                  .slice(0, 10)}
+                onChange={field.onChange}
+              />
+              {!!fieldState.error && (
+                <Notice error>{fieldState.error.message}</Notice>
+              )}
+            </>
           )}
         />
         {fields.map(([name, label]) => (

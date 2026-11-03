@@ -6,7 +6,7 @@ import {
   genders,
   docTypes,
 } from "../domain/catalogs";
-import { ArtPanel, SectionHeading } from "../components/visuals";
+import { SectionHeading } from "../components/visuals";
 import React, { useState, useCallback } from "react";
 import { Text, View, Pressable, BackHandler } from "react-native";
 import {
@@ -30,7 +30,6 @@ import {
   s,
   colors,
 } from "../components/ui";
-import { DocumentCard } from "../components/DocumentCard";
 import { useSession } from "../state/session";
 import {
   Declaration,
@@ -48,7 +47,6 @@ const titles = [
   "Tu residencia fiscal.",
   "Tu bienestar importa.",
   "Tú tienes el control.",
-  "Tus soportes, aquí.",
   "Todo en su lugar.",
 ];
 const subtitles = [
@@ -56,13 +54,12 @@ const subtitles = [
   "Dos preguntas para completar tu declaración FATCA / CRS.",
   "Responde cada pregunta. Un Sí necesita contexto, no implica un rechazo automático.",
   "Elige cómo contactarte y revisa las autorizaciones de prueba.",
-  "Adjunta tu último desprendible. Tu recibo ya forma parte de la cuenta.",
   "Revisa cada sección. Puedes volver y cambiar lo que necesites.",
 ];
 export default function Application() {
   const { draft, setDraft, identity } = useSession();
   const params = useLocalSearchParams<{ step?: string; edit?: string }>();
-  const step = Math.min(5, Math.max(0, Number(params.step) || 0));
+  const step = Math.min(4, Math.max(0, Number(params.step) || 0));
   useFocusEffect(
     useCallback(() => {
       const subscription = BackHandler.addEventListener(
@@ -115,14 +112,14 @@ export default function Application() {
     router.setParams({ step: String(n), edit: edit ? "1" : "" });
   }
   function next() {
-    const issue = step === 5 ? validateAll(draft) : validateStep(draft, step);
+    const issue = step === 4 ? validateAll(draft) : validateStep(draft, step);
     if (issue) {
       setError(issue);
       return;
     }
-    if (step === 5)
+    if (step === 4)
       router.push({ pathname: "/otp", params: { phase: "submit" } });
-    else go(params.edit === "1" ? 5 : step + 1);
+    else go(params.edit === "1" ? 4 : step + 1);
   }
   const summaries = [
     {
@@ -141,28 +138,24 @@ export default function Application() {
       label: "Autorizaciones",
       value: `Contacto: ${a.channels.join(", ")}\nPublicidad: ${a.commercial ? "Sí" : "No"}\nCentrales: ${a.riskConsent ? "autorizado" : "pendiente"} · Datos: ${a.dataConsent ? "autorizado" : "pendiente"}`,
     },
-    {
-      label: "Soportes",
-      value: `Desprendible: ${draft.documents.payslip?.name || "Pendiente"}`,
-    },
   ];
   return (
     <Screen
       onBack={() => (step > 0 ? go(step - 1) : router.back())}
       title={titles[step]}
-      eyebrow={`TU SOLICITUD · ${String(step + 1).padStart(2, "0")} / 06`}
+      eyebrow={`TU SOLICITUD · ${String(step + 1).padStart(2, "0")} / 05`}
       subtitle={subtitles[step]}
-      progress={(step + 1) / 6}
+      progress={(step + 1) / 5}
       footer={
         <>
           <View style={s.between}>
             <Text style={s.small}>{steps[step]}</Text>
-            <Text style={s.small}>{step + 1} de 6</Text>
+            <Text style={s.small}>{step + 1} de 5</Text>
           </View>
           {!!error && <Notice error>{error}</Notice>}
           <Button
             title={
-              step === 5
+              step === 4
                 ? "Confirmar con código de prueba"
                 : params.edit === "1"
                   ? "Guardar y volver al resumen"
@@ -229,21 +222,6 @@ export default function Application() {
                 options={genders}
                 onChange={(gender) => profile({ gender })}
               />
-              <DateField
-                label="Fecha de nacimiento *"
-                value={p.birthDate}
-                maxDate={new Date(
-                  new Date().setFullYear(new Date().getFullYear() - 18),
-                )
-                  .toISOString()
-                  .slice(0, 10)}
-                onChange={(birthDate) => profile({ birthDate })}
-              />
-              {Number.isFinite(age(p.birthDate)) && (
-                <Text style={s.small}>
-                  Edad calculada: {age(p.birthDate)} años
-                </Text>
-              )}
               <DateField
                 label="Fecha de expedición *"
                 value={p.expDate}
@@ -435,29 +413,8 @@ export default function Application() {
         )}
         {step === 4 && (
           <>
-            <ArtPanel
-              kind="documents"
-              title="Tu soporte de ingresos"
-              caption="El recibo y la acreditación se gestionan desde tu cuenta."
-            />
-            <DocumentCard
-              title="Desprendible de pago"
-              hint="Tu último desprendible de mesada pensional o nómina. El contenido debe estar completo y ser legible."
-              value={draft.documents.payslip}
-              onChange={(payslip) =>
-                setDraft((d) => ({
-                  ...d,
-                  documents: { ...d.documents, payslip },
-                  declaration: { ...d.declaration, reviewed: false },
-                }))
-              }
-            />
-          </>
-        )}
-        {step === 5 && (
-          <>
             <SectionHeading
-              number="06"
+              number="05"
               title="Tu plan, en detalle"
               detail="Todo listo para tu última revisión"
             />

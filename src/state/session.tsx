@@ -1,5 +1,18 @@
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { Platform } from "react-native";
 import { Draft, Result, freshDraft, demoDraft } from "../domain/model";
+import {
+  FilingDraft,
+  FilingReceipt,
+  freshFiling,
+  createFilingReceipt,
+} from "../domain/filing";
 type Session = {
   draft: Draft;
   setDraft: React.Dispatch<React.SetStateAction<Draft>>;
@@ -7,6 +20,10 @@ type Session = {
   setIdentity: (v: boolean) => void;
   result: Result | null;
   setResult: (v: Result | null) => void;
+  filing: FilingDraft | null;
+  setFiling: React.Dispatch<React.SetStateAction<FilingDraft | null>>;
+  filingReceipt: FilingReceipt | null;
+  submitFiling: () => void;
   demo: () => void;
   reset: () => void;
 };
@@ -14,7 +31,46 @@ const Context = createContext<Session | null>(null);
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [draft, setDraft] = useState(freshDraft);
   const [identity, setIdentity] = useState(false);
-  const [result, setResult] = useState<Result | null>(null);
+  const [result, setResultState] = useState<Result | null>(null);
+  const [filing, setFiling] = useState<FilingDraft | null>(null);
+  const [filingReceipt, setFilingReceipt] = useState<FilingReceipt | null>(
+    null,
+  );
+  function setResult(value: Result | null) {
+    setResultState(value);
+    setFiling(value?.favorable ? freshFiling(draft, value) : null);
+    setFilingReceipt(null);
+  }
+  function submitFiling() {
+    if (!identity || !result || !filing)
+      throw new Error(
+        "Inicia sesión con una preaprobación vigente para radicar.",
+      );
+    if (filingReceipt?.resultId === result.id) return;
+    setFilingReceipt(createFilingReceipt(filing, result, draft.profile));
+  }
+  const objectUrls = useRef(new Set<string>());
+  useEffect(() => {
+    if (Platform.OS !== "web") return;
+    const current = new Set(
+      [
+        ...Object.values(draft.documents),
+        ...Object.values(filing?.documents || {}),
+        ...Object.values(filingReceipt?.snapshot.documents || {}),
+      ].flatMap((file) => (file?.uri.startsWith("blob:") ? [file.uri] : [])),
+    );
+    objectUrls.current.forEach((uri) => {
+      if (!current.has(uri)) URL.revokeObjectURL(uri);
+    });
+    objectUrls.current = current;
+  }, [draft.documents, filing?.documents, filingReceipt?.snapshot.documents]);
+  useEffect(
+    () => () => {
+      if (Platform.OS === "web")
+        objectUrls.current.forEach((uri) => URL.revokeObjectURL(uri));
+    },
+    [],
+  );
   function reset() {
     setDraft(freshDraft());
     setIdentity(false);
@@ -34,6 +90,10 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         setIdentity,
         result,
         setResult,
+        filing,
+        setFiling,
+        filingReceipt,
+        submitFiling,
         demo,
         reset,
       }}

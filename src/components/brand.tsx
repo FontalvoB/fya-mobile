@@ -37,12 +37,14 @@ export function BottomNavigation({
 }) {
   const { identity } = useSession();
   const pathname = usePathname();
+  if (!identity) return null;
   const creditRoutes = [
     "/simulator",
     "/application",
     "/result",
     "/tracking",
     "/credits",
+    "/filing",
   ];
   const items: {
     label: string;

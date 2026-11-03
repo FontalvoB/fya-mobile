@@ -15,7 +15,7 @@ import {
 import { useSession } from "../state/session";
 import { money } from "../domain/model";
 export default function Result() {
-  const { result } = useSession();
+  const { result, filingReceipt } = useSession();
   if (!result) return <Redirect href="/home" />;
   return (
     <Screen
@@ -37,6 +37,27 @@ export default function Result() {
       }
     >
       <Reveal>
+        {result.favorable && (
+          <Card>
+            <Icon name="file-plus" />
+            <Text style={s.h2}>
+              {filingReceipt
+                ? "Tu radicación está preparada."
+                : "El siguiente paso es radicar."}
+            </Text>
+            <Text style={s.text}>
+              Completa tus datos y soportes para el estudio final de tu crédito.
+            </Text>
+            <Button
+              title={
+                filingReceipt
+                  ? "Ver radicación de prueba"
+                  : "Completar mi radicación"
+              }
+              onPress={() => router.push("/filing")}
+            />
+          </Card>
+        )}
         <ArtPanel
           kind="plans"
           title={

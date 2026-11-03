@@ -16,7 +16,7 @@ export default function Otp() {
   return <OtpForm key={phase} phase={phase} />;
 }
 function OtpForm({ phase }: { phase: string }) {
-  const { draft, setResult } = useSession();
+  const { draft, setResult, submitFiling } = useSession();
   const [code, setCode] = useState("");
   const [codeFocused, setCodeFocused] = useState(false);
   const [error, setError] = useState("");
@@ -25,7 +25,13 @@ function OtpForm({ phase }: { phase: string }) {
   const [challenge, setChallenge] = useState(
     () =>
       new DemoOtp(
-        phase === "submit" ? "219604" : phase === "sms" ? "735160" : "482913",
+        phase === "filing"
+          ? "584203"
+          : phase === "submit"
+            ? "219604"
+            : phase === "sms"
+              ? "735160"
+              : "482913",
       ),
   );
   const [submission] = useState(() => "demo-" + Date.now());
@@ -40,7 +46,22 @@ function OtpForm({ phase }: { phase: string }) {
       setError(issue);
       return;
     }
-    if (phase === "submit") {
+    if (phase === "filing") {
+      setBusy(true);
+      try {
+        submitFiling();
+        router.replace("/filing");
+      } catch (e) {
+        setError(
+          e instanceof Error
+            ? e.message
+            : "No se pudo completar la radicación de prueba.",
+        );
+        setChallenge(new DemoOtp(challenge.code));
+      } finally {
+        setBusy(false);
+      }
+    } else if (phase === "submit") {
       setBusy(true);
       try {
         setResult(await demoService.submit(draft, submission));
@@ -68,11 +89,13 @@ function OtpForm({ phase }: { phase: string }) {
         <View style={o.heading}>
           <Text style={r.eyebrow}>CÓDIGO DE PRUEBA</Text>
           <Text accessibilityRole="header" style={r.title}>
-            {phase === "submit"
-              ? "Un último paso."
-              : phase === "email"
-                ? "Tu correo, confirmado."
-                : "Ahora, tu celular."}
+            {phase === "filing"
+              ? "Confirma tu radicación."
+              : phase === "submit"
+                ? "Un último paso."
+                : phase === "email"
+                  ? "Tu correo, confirmado."
+                  : "Ahora, tu celular."}
           </Text>
           <Text style={r.description}>
             En esta demo no enviamos mensajes. Introduce el código que aparece
@@ -136,9 +159,11 @@ function OtpForm({ phase }: { phase: string }) {
         <View style={o.verify}>
           <ReferenceButton
             title={
-              phase === "submit"
-                ? "Finalizar solicitud de prueba"
-                : "Verificar código"
+              phase === "filing"
+                ? "Radicar solicitud de prueba"
+                : phase === "submit"
+                  ? "Finalizar solicitud de prueba"
+                  : "Verificar código"
             }
             busy={busy}
             onPress={verify}

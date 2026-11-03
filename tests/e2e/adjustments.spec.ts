@@ -31,10 +31,9 @@ test("calendar and dependent searchable choices preserve edits", async ({
   await page
     .getByRole("button", { name: "Editar datos de mi solicitud", exact: true })
     .click();
-  await chooseDate(page, "Fecha de nacimiento *", 1964, "Mayo", "1964-05-20");
   await expect(
     page.getByRole("button", { name: "Fecha de nacimiento *", exact: true }),
-  ).toContainText("20 / 05 / 1964");
+  ).toHaveCount(0);
   await chooseDate(page, "Fecha de expedición *", 1983, "Junio", "1983-06-10");
   await page
     .getByRole("button", { name: "Estado civil *", exact: true })
@@ -111,6 +110,9 @@ test("chat answers free text, followups, unknown topics and works at 320px", asy
   await expect(
     page.getByRole("img", { name: "FYA Social Capital" }),
   ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Explorar con un perfil de prueba" })
+    .click();
   await page.getByRole("button", { name: "Más", exact: true }).click();
   await page.getByRole("button", { name: "Abrir asistente de ayuda" }).click();
   const field = page.getByRole("textbox", { name: "Escribe tu pregunta" });

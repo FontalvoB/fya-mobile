@@ -31,7 +31,15 @@
       [
         "expo-image-picker",
         {
-          "cameraPermission": "Permite a FYA tomar una selfie opcional para esta demostración.",
+          "cameraPermission": "Permite a FYA tomar fotos de tus documentos.",
+          "microphonePermission": false
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Permite a FYA grabar tu video de validación.",
+          "recordAudioAndroid": false,
           "microphonePermission": false
         }
       ]

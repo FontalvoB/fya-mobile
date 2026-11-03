@@ -79,7 +79,7 @@ const knowledge: { keys: string[]; text: string; suggestions: string[] }[] = [
   },
   {
     keys: ["calendario", "fecha", "nacimiento", "expedicion"],
-    text: "Toca el campo de fecha para abrir el calendario. Toca el año para elegirlo directamente y después selecciona mes y día. No necesitas escribir fechas. El nacimiento debe corresponder a una persona mayor de edad y la expedición no puede ser futura ni anterior al nacimiento.",
+    text: "Toca el campo de fecha para abrir el calendario. Toca el año para elegirlo directamente y después selecciona mes y día. No necesitas escribir fechas. La fecha de nacimiento se solicita al registrar la cuenta. El nacimiento debe corresponder a una persona mayor de edad y la expedición no puede ser futura ni anterior al nacimiento.",
     suggestions: ["¿Cómo elijo mi ciudad?", "¿Qué documentos necesito?"],
   },
   {
@@ -110,17 +110,29 @@ const knowledge: { keys: string[]; text: string; suggestions: string[] }[] = [
   },
   {
     keys: ["resultado", "aprobado", "preaprob", "desembolso", "firma"],
-    text: "El resultado es una viabilidad calculada con datos de prueba. No constituye aprobación, firma ni desembolso. Si la cuota supera la capacidad estimada, puedes ajustar monto o plazo y volver a simular.",
+    text: "El resultado es una viabilidad calculada con datos de prueba. No constituye aprobación, firma ni desembolso. Con preaprobación puedes completar la radicación desde el resultado, el seguimiento o Crédito. Si la cuota supera la capacidad estimada, puedes ajustar monto o plazo y volver a simular.",
     suggestions: ["¿Cómo simulo un crédito?", "¿En qué va mi solicitud?"],
   },
   {
     keys: ["documento", "necesito", "soporte", "desprendible"],
-    text: "Para crear la cuenta: ambas caras del documento de identidad, acreditación de pensionado/docente, recibo de servicio público y contrato de arrendamiento si la vivienda no es propia. La selfie es opcional. Durante la solicitud se adjunta el desprendible de pago.",
+    text: "Para crear la cuenta: ambas caras del documento de identidad, acreditación de pensionado/docente, recibo de servicio público y contrato de arrendamiento si la vivienda no es propia. Después se graba un video guiado. La simulación no pide desprendible. La radicación posterior pide comprobante de ingresos y certificado bancario de los últimos 30 días; puedes reutilizar la identidad del registro. Solo la identidad permite tomar fotos; los demás soportes se adjuntan.",
     suggestions: [
       "¿Dónde adjunto el recibo?",
       "¿Qué formatos aceptan?",
       "¿Y si vivo en arriendo?",
     ],
+  },
+  {
+    keys: [
+      "radicacion",
+      "radicar",
+      "pep",
+      "conyuge",
+      "referencias",
+      "certificado bancario",
+    ],
+    text: "Después de la preaprobación, abre Completar mi radicación. Son ocho secciones: solicitante, PEP, actividad laboral, cónyuge cuando aplica, referencias, crédito, soportes y comentarios. El vínculo con PEP pide parentesco, tipo y número de documento y nombre del familiar o cercano. Puedes retomar durante esta sesión. El código final confirma la radicación de prueba; no envía datos a FYA ni firma el pagaré.",
+    suggestions: ["¿Qué documentos necesito?", "¿Se envían mis datos?"],
   },
   {
     keys: ["simul", "credito", "tasa", "cuota", "monto", "plazo"],
@@ -132,7 +144,7 @@ const knowledge: { keys: string[]; text: string; suggestions: string[] }[] = [
   },
   {
     keys: ["como funciona", "solicitud", "proceso", "empezar", "paso"],
-    text: "Crea tu perfil, confirma los códigos de prueba y completa Documentos de cuenta. Después simula el crédito y recorre datos personales, declaración fiscal, salud, autorizaciones, desprendible y resumen. Puedes editar antes de confirmar.",
+    text: "Crea tu perfil, confirma los códigos de prueba y completa Documentos de cuenta. Después simula el crédito y recorre datos personales, declaración fiscal, salud, autorizaciones y resumen. Puedes editar antes de confirmar.",
     suggestions: [
       "¿Qué documentos necesito?",
       "¿Cómo uso el calendario?",
